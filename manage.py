@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import sys
+import os
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.enums import ParseMode
@@ -10,7 +11,7 @@ from app.handlers import router
 from app.db.models import async_main
 from config import TOKEN
 
-menu = []
+# TOKEN = os.environ.get('TELEGRAM_API_TOKEN')
 
 
 async def main() -> None:
