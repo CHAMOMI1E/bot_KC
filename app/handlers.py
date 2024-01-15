@@ -2,6 +2,10 @@ from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import CommandStart
 
+from decorators import check_admin
+
+from app.views import *
+
 import keyboard as kb
 
 router = Router()
@@ -9,7 +13,7 @@ router = Router()
 
 @router.message(CommandStart())
 async def cmd_start(message: Message):
-    await message.answer(f"Hello, {message.from_user.full_name}!")
+    await hello(message)
 
 
 @router.message(F.text == "Просмотр")
