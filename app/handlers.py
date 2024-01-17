@@ -3,12 +3,12 @@ from aiogram.types import Message
 from aiogram.filters import CommandStart
 
 from decorators import check_admin
+import keyboard as kb
 
 from config import ADMIN
 
 from app.views import *
-
-import keyboard as kb
+from app.admin import *
 
 router = Router()
 
@@ -16,7 +16,7 @@ router = Router()
 @router.message(CommandStart())
 async def cmd_start(message: Message):
     if message.from_user.id in ADMIN:
-        pass  # TODO написать функцию которую будет возращать клавиатуру админа и отвечать ей за работу админа и тд.
+        await admin_start(message)
     else:
         await hello(message)
 

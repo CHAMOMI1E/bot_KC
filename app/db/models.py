@@ -6,6 +6,8 @@ engine = create_async_engine("postgresql+asyncpg://postgres:02082002@localhost:5
 
 async_session = async_sessionmaker(engine)
 
+STATUS = ("user", "admin", "fired")
+
 
 class Base(AsyncAttrs, DeclarativeBase):
     pass
