@@ -21,6 +21,6 @@ async def cmd_start(message: Message):
         await hello(message)
 
 
-@router.message(F.text == "Просмотр")
+@router.message(F.data == "send_text")
 async def list_users(message: Message):
     await message.answer("Список юзеров", reply_markup=await kb.main_keyboard())
