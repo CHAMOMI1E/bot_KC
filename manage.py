@@ -12,12 +12,12 @@ from app.db.models import async_main
 from config import TOKEN
 
 # TOKEN = os.environ.get('TELEGRAM_API_TOKEN')
+dp = Dispatcher()
 
 
 async def main() -> None:
     await async_main()
     bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
-    dp = Dispatcher()
     dp.include_router(router)
     await dp.start_polling(bot)
 

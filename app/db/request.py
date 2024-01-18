@@ -4,8 +4,8 @@ from sqlalchemy import select
 
 async def get_users():
     async with async_session() as session:
-        result = await session.scalar(select(Users)).all()
-        return result
+        result = await session.execute(select(Users))
+        return result.scalars().all()
 
 
 async def add_user(name: str, surname: str, patronymic: str, id_tg: int) -> None:
@@ -26,3 +26,10 @@ async def add_user(name: str, surname: str, patronymic: str, id_tg: int) -> None
             print("Error adding user info:", e)
             session.rollback()
         # return
+
+
+async def get_user_by_id(id_teleg: int):
+    async with async_session() as session:
+        result = await session.execute(select(Accounts).filter_by(id_tg=id_teleg))
+        existing_user = result.scalars().first()
+        return existing_user
