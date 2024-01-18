@@ -2,8 +2,7 @@ from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import CommandStart
 
-from decorators import check_admin
-import keyboard as kb
+from app import keyboard as kb
 
 from config import ADMIN
 

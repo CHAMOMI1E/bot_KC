@@ -1,7 +1,7 @@
 from aiogram import types
 
-from keyboard import main
-from decorators import check_admin
+from app.keyboard import main
+from app.decorators import check_admin
 
 
 @check_admin
