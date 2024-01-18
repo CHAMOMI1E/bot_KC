@@ -8,7 +8,7 @@ from typing import Annotated, List
 
 bigint = Annotated[int, "BigInteger"]
 
-engine = create_async_engine("postgresql+asyncpg://chamomile:02082002@localhost:5432/test_db", echo=True)
+engine = create_async_engine("postgresql+asyncpg://postgres:02082002@localhost:5433/test_db", echo=True)
 
 async_session = async_sessionmaker(engine)
 
@@ -55,6 +55,7 @@ class Users(Base):
     name: Mapped[str] = mapped_column()
     surname: Mapped[str] = mapped_column()
     patronymic: Mapped[str] = mapped_column()
+    # departament: Mapped[str] = mapped_column()
 
     accounts: Mapped[List["Accounts"]] = relationship("Accounts", back_populates="user")
 

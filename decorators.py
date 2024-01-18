@@ -1,4 +1,5 @@
 from aiogram import types
+from app.core.template_env import template_env
 
 
 def check_admin(func):
@@ -6,5 +7,5 @@ def check_admin(func):
         if str(message.from_user.id) == "916134959":
             await func(message,  *args, **kwargs)
         else:
-            await message.answer("Ты не админ")
+            await message.answer(template_env.get_template('error_message.html').render())
     return wrapper
