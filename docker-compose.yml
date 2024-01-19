@@ -18,4 +18,4 @@ services:
         dockerfile: Dockerfile
     environment:
       - TELEGRAM_API_TOKEN=5963841255:AAGfwJKvat72Vhq4uVUaZ9jyhsWJyOQ-sLE
-    command: sh -c "source /opt/venv/bin/activate && python3 manage.py"
+    command: sh -c "source /opt/venv/bin/afctivate && python3 manage.py"

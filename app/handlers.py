@@ -11,12 +11,12 @@ router = Router()
 
 
 @router.message(CommandStart())
-async def cmd_start(message: Message):
+async def cmd_start(message: Message, state: FSMContext):
     # await message.answer(await check_user_in_db(message))
     if message.from_user.id in ADMIN:
         await admin_start(message)
     else:
-        await check_user_in_db(message)
+        await check_user_in_db(message, state)
 
 
 # @dp.message_handler(callback_query=lambda message: True)

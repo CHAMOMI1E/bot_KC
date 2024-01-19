@@ -16,13 +16,12 @@ from app.views.form import register_router
 # TOKEN = os.environ.get('TELEGRAM_API_TOKEN')
 
 
-
 async def main() -> None:
     await async_main()
     bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
     dp = Dispatcher()
     dp.include_routers(router,
-                      register_router)
+                       register_router)
 
     await dp.start_polling(bot)
 
