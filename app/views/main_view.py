@@ -1,10 +1,7 @@
-from aiogram import types
-
 from app.keyboard import main
-from app.decorators import check_admin
+from app.core.decorators import check_admin
 from app.views.form import *
 
-from app.db.models import Users, Accounts, async_session
 from app.db.request import *
 
 
