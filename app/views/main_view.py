@@ -1,4 +1,4 @@
-from app.keyboard import main
+from app.core.keyboard import main
 from app.core.decorators import check_admin
 from app.views.form import *
 
@@ -14,8 +14,7 @@ async def check_user_in_db(message: types.Message):
     if await get_user_by_id(message.from_user.id):
         return await message.answer(f"Ты уже зарегистрирован!")
     else:
-        await message.answer(f"Привет. Для начала отправь своё имя:")
-        await ProfileStatesGroup.name.set()
+        register_user(message)
 
 
 async def hello_name(message: types.Message, name: str):

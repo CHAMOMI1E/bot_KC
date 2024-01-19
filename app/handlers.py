@@ -1,8 +1,5 @@
-from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import CommandStart
-
-from app import keyboard as kb
 
 from config import ADMIN
 
