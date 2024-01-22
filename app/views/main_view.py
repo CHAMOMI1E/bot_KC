@@ -18,6 +18,3 @@ async def check_user_in_db(message: types.Message, state: FSMContext):
         await state.set_state(Form.name)
         await message.answer("Привет. Для начала введи свое имя:")
 
-
-async def hello_name(message: types.Message, name: str):
-    return await message.reply(f"Hello, {name}")

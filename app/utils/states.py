@@ -7,4 +7,5 @@ class Form(StatesGroup):
     patronymic = State()
 
 
-
+class Post(StatesGroup):
+    text = State()
