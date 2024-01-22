@@ -1,9 +1,9 @@
-from aiogram import types, Router
+from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 
-from app.core.keyboard import accept_register, accept_keyboard
+from app.core.keyboard import accept_keyboard
+from app.db.request import add_user
 from app.utils.states import Form
-
 
 register_router = Router()
 
@@ -31,7 +31,7 @@ async def patronymic(message: types.Message, state: FSMContext):
 async def result(message: types.Message, state: FSMContext):
     await state.update_data(patronymic=message.text)
     data = await state.get_data()
-    await state.clear()
+    # await state.clear()
     await message.answer(f"Имя: {data['name']} \n"
                          f"Фамилия: {data['surname']} \n"
                          f"Отчество: {data['patronymic']} \n"
@@ -39,3 +39,11 @@ async def result(message: types.Message, state: FSMContext):
                          reply_markup=accept_keyboard
                          )
 
+
+@register_router.callback_query(F.data == "accept_register", Form.patronymic)
+async def confirm_form(message: types.Message, state: FSMContext):
+    data = await state.get_data()
+    await state.clear()
+    await add_user(data['name'], data['surname'], data['patronymic'], message.from_user.id)
+    # await message.edit_text("Confirm")
+    await message.answer("Confirm registration")

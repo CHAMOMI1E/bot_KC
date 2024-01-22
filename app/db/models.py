@@ -24,30 +24,6 @@ class Base(AsyncAttrs, DeclarativeBase):
     pass
 
 
-# class User(Base):
-#     __tablename__ = "users"
-#
-#     id = Column(BigInteger, primary_key=True)
-#     name = Column(String)
-#     surname = Column(String)
-#     patronymic = Column(String)
-#
-#     accounts = relationship("Account", back_populates="user")
-#
-#
-# class Account(Base):
-#     __tablename__ = 'accounts'
-#
-#     id = Column(BigInteger, primary_key=True)
-#     id_tg = Column(BigInteger)
-#     status = Column(String)
-#     id_user = Column(BigInteger, ForeignKey("users.id"))
-#
-#     user = relationship("User", back_populates="accounts")
-#
-#     __table_args__ = (UniqueConstraint('id_tg', 'id_user'),)
-
-
 class Users(Base):
     __tablename__ = "users"
 
@@ -78,3 +54,4 @@ class Accounts(Base):
 async def async_main():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+

@@ -9,7 +9,7 @@ main = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text='Отправить', 
                                      ])
 
 accept = [
-    [InlineKeyboardButton(text="Acceopt", callback_data="accept_register")],
+    [InlineKeyboardButton(text="Accept", callback_data="accept_register")],
     [InlineKeyboardButton(text="Decline", callback_data="decline_register")]
 ]
 accept_keyboard = InlineKeyboardMarkup(inline_keyboard=accept, resize_keyboard=True)
