@@ -3,9 +3,9 @@ import logging
 import sys
 import os
 
-from aiogram import Bot, Dispatcher, types
+from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
-from aiogram.filters.command import Command
+
 
 from app.db.models import async_main
 from config import TOKEN

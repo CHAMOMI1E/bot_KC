@@ -13,7 +13,7 @@ async def admin_start(message: types.Message):
 @check_admin
 async def admin_show_users(message: types.Message):
     users = ()
-    text = "Список сотрудников:/n"
+    text = "Список сотрудников: \n"
     for user in users:
-        text = text + f"{user.name}"
+        text = text + f"{user.id} {user.name}\n"
 

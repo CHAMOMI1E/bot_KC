@@ -1,7 +1,9 @@
 from aiogram import types, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup, State
+
+from app.core.keyboard import accept_register, accept_keyboard
 from app.utils.states import Form
+
 
 register_router = Router()
 
@@ -30,7 +32,10 @@ async def result(message: types.Message, state: FSMContext):
     await state.update_data(patronymic=message.text)
     data = await state.get_data()
     await state.clear()
-    await message.answer(f"Имя:{data['name']} \n"
+    await message.answer(f"Имя: {data['name']} \n"
                          f"Фамилия: {data['surname']} \n"
-                         f"Отчество: {data['patronymic']} \n",
+                         f"Отчество: {data['patronymic']} \n"
+                         f"Все верно введено?",
+                         reply_markup=accept_keyboard
                          )
+
