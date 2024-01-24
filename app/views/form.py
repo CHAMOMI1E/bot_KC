@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from app.core.keyboard import accept_keyboard
 from app.db.request import add_user
 from app.utils.states import Form
-from app.views.accept_message import send_accept_message
+# from app.views.accept_message import send_accept_message
 
 register_router = Router()
 
@@ -48,5 +48,4 @@ async def confirm_form(message: types.Message, state: FSMContext):
     await add_user(data['name'], data['surname'], data['patronymic'], message.from_user.id)
     # await message.edit_text("Confirm")
     await message.answer("Confirm registration")
-    await send_accept_message(data['name'], data['surname'], data['patronymic'], message.from_user.id)
-
+    # await send_accept_message(data['name'], data['surname'], data['patronymic'], message.from_user.id)

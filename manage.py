@@ -10,7 +10,7 @@ from app.db.models import async_main
 from config import TOKEN
 from app.handlers import *
 from app.views.form import register_router
-# from app.views.accept_message import router_of_message
+from app.views.accept_message import message_handler
 
 
 bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
@@ -20,7 +20,9 @@ dp = Dispatcher()
 async def main() -> None:
     await async_main()
     dp.include_routers(router,
-                       register_router)
+                       register_router,
+                       message_handler,
+                       )
 
     await dp.start_polling(bot)
 

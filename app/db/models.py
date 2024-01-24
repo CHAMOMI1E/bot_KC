@@ -8,7 +8,7 @@ from typing import Annotated, List
 
 bigint = Annotated[int, "BigInteger"]
 
-engine = create_async_engine("postgresql+asyncpg://chamomile:02082002@localhost:5432/test_db", echo=True)
+engine = create_async_engine("postgresql+asyncpg://postgres:02082002@localhost:5433/test_db", echo=True)
 
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
