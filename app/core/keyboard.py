@@ -15,6 +15,13 @@ accept = [
 accept_keyboard = InlineKeyboardMarkup(inline_keyboard=accept, resize_keyboard=True)
 
 
+accept_user = [
+    [InlineKeyboardButton(text="Accept", callback_data=f"accept_{id}")],
+    [InlineKeyboardButton(text="Decline", callback_data=f"decline_{id}")]
+]
+accept_user_keyboard = InlineKeyboardMarkup(inline_keyboard=accept, resize_keyboard=True)
+
+
 async def main_keyboard():
     users_kb = InlineKeyboardBuilder()
     users = await get_users()

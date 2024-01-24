@@ -47,3 +47,4 @@ async def confirm_form(message: types.Message, state: FSMContext):
     await add_user(data['name'], data['surname'], data['patronymic'], message.from_user.id)
     # await message.edit_text("Confirm")
     await message.answer("Confirm registration")
+

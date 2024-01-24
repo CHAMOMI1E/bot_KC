@@ -6,22 +6,22 @@ import os
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 
-
 from app.db.models import async_main
 from config import TOKEN
 from app.handlers import *
 from app.views.form import register_router
+from app.views.accept_message import accept_router
 
 
-# TOKEN = os.environ.get('TELEGRAM_API_TOKEN')
+bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
+dp = Dispatcher()
 
 
 async def main() -> None:
     await async_main()
-    bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
-    dp = Dispatcher()
     dp.include_routers(router,
-                       register_router)
+                       register_router,
+                       accept_router)
 
     await dp.start_polling(bot)
 

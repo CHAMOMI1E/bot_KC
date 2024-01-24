@@ -1,6 +1,6 @@
-from sqlalchemy import BigInteger, ForeignKey, UniqueConstraint, Column, String
+from sqlalchemy import BigInteger, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine, AsyncAttrs
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncAttrs
 
 from enum import Enum
 
@@ -15,7 +15,7 @@ async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 class Status(Enum):
     ACTIVE = "ACTIVE"
-    DIZABLE = "DIZABLE"
+    DISABLE = "DISABLE"
     ADMIN = "ADMIN"
     UNKNOWN = "UNKNOWN"
 
@@ -54,4 +54,3 @@ class Accounts(Base):
 async def async_main():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-
