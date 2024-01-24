@@ -12,7 +12,6 @@ from app.handlers import *
 from app.views.form import register_router
 from app.views.accept_message import message_handler
 
-
 bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
 dp = Dispatcher()
 
