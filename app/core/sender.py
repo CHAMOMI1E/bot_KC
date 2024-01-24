@@ -16,5 +16,5 @@ async def send_accept_message(name: str, surname: str, patronymic: str, chat_id:
     except Exception as e:
         print(f"Caught exception: {e}")
     finally:
-        await asyncio.sleep(3)  # Добавим небольшую задержку
+        # await asyncio.sleep(3)  # Добавим небольшую задержку
         await bot_sender.session.close()
