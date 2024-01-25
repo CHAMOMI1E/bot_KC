@@ -28,7 +28,7 @@ async def add_user(name: str, surname: str, patronymic: str, id_tg: int) -> None
             await session.rollback()
 
 
-async def accept_user_id_db(id_teleg: int, status: bool) -> None:
+async def edit_user_id_db(id_teleg: int, status: bool) -> None:
     async with async_session() as session:
         try:
             if status:
