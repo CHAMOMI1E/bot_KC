@@ -1,18 +1,14 @@
-from aiogram import Router, F, types
-
-from config import ADMIN
-from app.core.template_env import template_env
-from app.core.keyboard import accept_user_keyboard
-
+from aiogram import F, Router, types
 
 message_handler = Router()
 
 
-@message_handler.callback_query(F.data == "accept_")
-async def accept_message(message: types.Message):
-    data = message.text.split("_")[1]
+data = "accept_128131271723"
+
+
+@message_handler.callback_query(F.data.startswith("accept_"))
+async def accept_message(call: types.CallbackQuery):
+    data = call.data.split("_")[1]
     data = int(data) if data.isdigit() else None
     print(data)
-    await message.answer(f"{data}")
-
-
+    await call.message.answer(f"{data}")

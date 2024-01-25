@@ -1,14 +1,15 @@
-from sqlalchemy import BigInteger, ForeignKey, UniqueConstraint
-from sqlalchemy.orm import relationship, Mapped, mapped_column, DeclarativeBase
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncAttrs
-
 from enum import Enum
-
 from typing import Annotated, List
+
+from sqlalchemy import BigInteger, ForeignKey, UniqueConstraint
+from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 bigint = Annotated[int, "BigInteger"]
 
-engine = create_async_engine("postgresql+asyncpg://postgres:02082002@localhost:5433/test_db", echo=True)
+engine = create_async_engine(
+    "postgresql+asyncpg://test_user:02082002@localhost/test_db", echo=True
+)
 
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
@@ -37,18 +38,16 @@ class Users(Base):
 
 
 class Accounts(Base):
-    __tablename__ = 'accounts'
+    __tablename__ = "accounts"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     id_tg: Mapped[bigint] = mapped_column(BigInteger)
     status: Mapped[str] = mapped_column()
     id_user: Mapped[bigint] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 
-    user: Mapped[List["Users"]] = relationship(
-        "Users", back_populates="accounts"
-    )
+    user: Mapped[List["Users"]] = relationship("Users", back_populates="accounts")
 
-    __table_args__ = (UniqueConstraint('id_tg', 'id_user'),)
+    __table_args__ = (UniqueConstraint("id_tg", "id_user"),)
 
 
 async def async_main():
