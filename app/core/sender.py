@@ -7,7 +7,10 @@ from config import ADMIN, TOKEN
 
 async def send_accept_message(name: str, surname: str, patronymic: str, chat_id: int):
     template = template_env.get_template("accept_user.html").render(
-        name=name, surname=surname, patronymic=patronymic, id_tg=chat_id
+        name=name,
+        surname=surname,
+        patronymic=patronymic,
+        id_tg=chat_id
     )
 
     bot_sender = Bot(TOKEN)
@@ -20,5 +23,4 @@ async def send_accept_message(name: str, surname: str, patronymic: str, chat_id:
     except Exception as e:
         print(f"Caught exception: {e}")
     finally:
-        # await asyncio.sleep(3)  # Добавим небольшую задержку
         await bot_sender.session.close()
