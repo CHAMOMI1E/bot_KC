@@ -18,7 +18,7 @@ async def send_accept_message(name: str, surname: str, patronymic: str, chat_id:
         await bot_sender.send_message(
             chat_id=ADMIN[0],
             text=template,
-            reply_markup=accept_user_keyboard(user_id=chat_id),
+            reply_markup=accept_user_keyboard(user_id=chat_id)
         )
     except Exception as e:
         print(f"Caught exception: {e}")

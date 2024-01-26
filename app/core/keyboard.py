@@ -19,14 +19,13 @@ accept = [
 accept_keyboard = InlineKeyboardMarkup(inline_keyboard=accept, resize_keyboard=True)
 
 
-@kb_wrap(keyboard_type="inline")
+@kb_wrap(keyboard_type="inline", adjust_keyboard=2)
 def accept_user_keyboard(
     builder: InlineKeyboardBuilder, user_id: int
 ) -> InlineKeyboardMarkup:
     action_types = ("accept", "decline")
-
-    for action in action_types:
-        builder.button(text=action.upper(), callback_data=f"{action}_{user_id}")
+    builder.button(text="ДА", callback_data=f"{action_types[0]}_{user_id}")
+    builder.button(text="НЕТ", callback_data=f"{action_types[1]}_{user_id}")
 
 
 async def main_keyboard():
