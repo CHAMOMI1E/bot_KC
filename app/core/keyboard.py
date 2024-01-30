@@ -30,12 +30,12 @@ async def main_keyboard():
 
 @kb_wrap(keyboard_type="reply", adjust_keyboard=3)
 def admin_keyboard(builder: ReplyKeyboardBuilder) -> ReplyKeyboardMarkup:
-    builder.button(text="Отправить", callback_data="send_text")
-    builder.button(text="Удалить", callback_data="delete_user")
-    builder.button(text="Просмотр", callback_data="show_users")
+    builder.button(text="Отправить")
+    builder.button(text="Удалить")
+    builder.button(text="Просмотр")
 
 
 @kb_wrap(keyboard_type="inline", adjust_keyboard=2)
-def accept_text(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
-    builder.button(text="yes".upper(), callback_data="accept_text")
-    builder.button(text="no".upper(), callback_data="decline_text")
+def accept_text_kb(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
+    builder.button(text="yes".upper(), callback_data="text_accept")
+    builder.button(text="no".upper(), callback_data="text_decline")

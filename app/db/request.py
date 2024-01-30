@@ -61,3 +61,15 @@ async def get_user_by_id(id_teleg: int):
         result = await session.execute(select(Accounts).filter_by(id_tg=id_teleg))
         existing_user = result.scalars().first()
         return existing_user
+
+
+async def get_accept_accounts():
+    # async with async_session() as session:
+    #     return await session.execute(select(Accounts).filter(Accounts.status == Status.ACTIVE.value)).scalars().all()
+
+    async with async_session() as session:
+        async with session.begin():
+            stmt = select(Accounts).filter(Accounts.status == Status.ACTIVE.value)
+            result = await session.execute(stmt)
+            accounts_with_desired_status = result.scalars().all()
+    return accounts_with_desired_status

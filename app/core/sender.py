@@ -27,14 +27,13 @@ async def send_accept_message(name: str, surname: str, patronymic: str, chat_id:
         await bot_sender.session.close()
 
 
-async def send_message(text: str, chat_ids: Tuple[int]) -> None:
+async def send_message(text: str, chat_id: int) -> None:
     bot_sender = Bot(TOKEN)
     try:
-        for chat_id in chat_ids:
-            await bot_sender.send_message(
-                chat_id=chat_id,
-                text=text,
-            )
+        await bot_sender.send_message(
+            chat_id=chat_id,
+            text=text,
+        )
     except Exception as e:
         print(f"Caught exception: {e}")
     finally:
