@@ -9,6 +9,7 @@ from aiogram.enums import ParseMode
 from app.db.models import async_main
 from config import TOKEN
 from app.handlers import *
+from app.admin import admin_router
 from app.views.form import register_router
 from app.views.accept_message import message_handler
 
@@ -21,6 +22,7 @@ async def main() -> None:
     dp.include_routers(router,
                        register_router,
                        message_handler,
+                       admin_router,
                        )
 
     await dp.start_polling(bot)
@@ -32,3 +34,8 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         print('stop')
+
+
+
+
+

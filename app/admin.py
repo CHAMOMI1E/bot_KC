@@ -53,3 +53,6 @@ async def accept_text(message: types.Message, state: FSMContext):
 @admin_router.message(F.text == "test")
 async def test(message: types.Message) -> None:
     await message.answer("Test admin")
+
+
+@admin_router.error
