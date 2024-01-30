@@ -1,8 +1,13 @@
+from typing import Tuple, Dict
+
+from sqlalchemy.orm import make_transient
+
 from app.db.models import Users, Accounts, async_session, Status
 from sqlalchemy import select
+from sqlalchemy import update
 
 
-async def get_users():
+async def get_users() -> Dict:
     async with async_session() as session:
         result = await session.execute(select(Users))
         return result.scalars().all()
@@ -31,16 +36,21 @@ async def add_user(name: str, surname: str, patronymic: str, id_tg: int) -> None
 async def edit_user_id_db(id_teleg: int, status: bool) -> None:
     async with async_session() as session:
         try:
-            if status:
-                user = await get_user_by_id(id_teleg)
-                user.status = Status.ACTIVE.value
-                await session.commit()
-                print(f'Пользователь под id {id_teleg} был подтвержден админом')
-            else:
-                user = await get_user_by_id(id_teleg)
-                user.status = Status.DISABLE.value
-                await session.commit()
-                print(f'Пользователь под id {id_teleg} был отключен админом')
+            # поиск аккаунта с нужным id в базе
+            statement = select(Accounts).where(Accounts.id_tg == id_teleg)
+            result = await session.execute(statement)
+            account = result.scalar()
+            if account:
+                # изменение статуса в зависимости от того какой статус был выдан
+                if status:
+                    account.status = Status.ACTIVE.value
+                    await session.commit()
+                    print(f"Пользователь с ID {id_teleg} был подключен и подтвержден админом")
+                else:
+                    account.status = Status.DISABLE.value
+                    await session.commit()
+                    print(f"Пользователь с ID {id_teleg} был отключен админом")
+        # ловля ошибок по бд)
         except Exception as e:
             print("Error adding user info:", e)
             await session.rollback()

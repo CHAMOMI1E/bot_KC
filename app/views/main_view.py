@@ -1,14 +1,12 @@
-from app.core.keyboard import main
-from app.core.decorators import check_admin
+from app.core.keyboard import admin_keyboard
 from app.views.form import *
 from aiogram.fsm.context import FSMContext
 
 from app.db.request import *
 
 
-@check_admin
 async def hello(message: types.Message):
-    await message.answer(f"Hello, {message.from_user.full_name}!", reply_markup=main)
+    await message.answer(f"Hello, {message.from_user.full_name}!", reply_markup=admin_keyboard())
 
 
 async def check_user_in_db(message: types.Message, state: FSMContext):

@@ -12,25 +12,14 @@ from config import ADMIN
 F = TypeVar("F", bound=Callable[..., Any])
 
 
-def check_admin(func):
-    async def wrapper(message: types.Message, *args, **kwargs):
-        if message.from_user.id in ADMIN:
-            await func(message, *args, **kwargs)
-        else:
-            await message.answer(
-                template_env.get_template("error_message.html").render()
-            )
-
-    return wrapper
-
-
+# декоратор собственного производства для создания клавиатуры, инструкции будут описаны лично
 def kb_wrap(
-    keyboard_type: Literal["reply", "inline"] = "inline",
-    adjust_keyboard: int | Tuple[int] = 1,
-    **builder_params,
+        keyboard_type: Literal["reply", "inline"] = "inline",
+        adjust_keyboard: int | Tuple[int] = 1,
+        **builder_params,
 ):
     def get_keyboard_builder(
-        keyboard_type: Literal["reply", "inline"]
+            keyboard_type: Literal["reply", "inline"]
     ) -> ReplyKeyboardBuilder | InlineKeyboardBuilder:
         if keyboard_type == "inline":
             return InlineKeyboardBuilder()
@@ -38,21 +27,21 @@ def kb_wrap(
             return ReplyKeyboardBuilder()
 
     def apply_builder_changes(
-        builder: InlineKeyboardBuilder | ReplyKeyboardBuilder,
-        adjust_keyboard: int | Tuple[int] = 1,
-        **builder_params,
+            builder: InlineKeyboardBuilder | ReplyKeyboardBuilder,
+            adjust_keyboard: int | Tuple[int] = 1,
+            **builder_params,
     ) -> InlineKeyboardMarkup | ReplyKeyboardMarkup:
         if adjust_keyboard:
             if isinstance(adjust_keyboard, int):
                 adjust_keyboard = (adjust_keyboard,)
             builder.adjust(*adjust_keyboard)
 
-        return builder.as_markup(**builder_params)
+        return builder.as_markup(**builder_params, resize_keyboard=True)
 
     def wrapper(func: F) -> F:
         @functools.wraps(func)
         async def wrapped_f(
-            *args: Any, **kwargs: Any
+                *args: Any, **kwargs: Any
         ) -> InlineKeyboardMarkup | ReplyKeyboardMarkup:
             builder = get_keyboard_builder(keyboard_type=keyboard_type)
 
@@ -62,7 +51,7 @@ def kb_wrap(
 
         @functools.wraps(func)
         def sync_wrapped_f(
-            *args: Any, **kwargs: Any
+                *args: Any, **kwargs: Any
         ) -> InlineKeyboardMarkup | ReplyKeyboardMarkup:
             builder = get_keyboard_builder(keyboard_type=keyboard_type)
 
