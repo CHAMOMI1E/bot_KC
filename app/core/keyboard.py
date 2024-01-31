@@ -45,3 +45,9 @@ def accept_text_kb(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
 def delete_accept(builder: InlineKeyboardBuilder, id_user: int) -> InlineKeyboardMarkup:
     builder.button(text="yes".upper(), callback_data=f"delete_{id_user}")
     builder.button(text="no".upper(), callback_data=f"delete_decline")
+
+
+@kb_wrap(keyboard_type="inline", adjust_keyboard=2)
+def form_accept(builder: InlineKeyboardBuilder, name: str, surname: str, patronymic: str) -> InlineKeyboardMarkup:
+    builder.button(text="верно".upper(), callback_data=f"forma_{name}_{surname}_{patronymic}")
+    builder.button(text="переписать".upper(), callback_data=f"form_decline")

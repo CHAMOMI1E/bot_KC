@@ -46,9 +46,10 @@ async def accept_newsletter(message: types.Message, state: FSMContext):
 
 
 @admin_router.callback_query(F.data == "text_accept")
-async def accept_text_def(message: types.Message, state: FSMContext):
+async def accept_text_def(call: types.CallbackQuery, state: FSMContext):
     # await message.edit_text()
     # await message.bot.send_message(message.from_user.id, message.text)
+    await call.message.edit_text("Сообщение отправленно!")
     data1 = await state.get_data()
     print(data1)
     await state.clear()
@@ -61,11 +62,6 @@ async def accept_text_def(message: types.Message, state: FSMContext):
 @admin_router.callback_query(F.data == "text_decline")
 async def decline_text_def(message: types):
     print("Decline text")
-
-
-@admin_router.message(F.text == "test", IsAdmin())
-async def test(message: types.Message) -> None:
-    await message.answer("Test admin")
 
 
 # TODO сделать функцию и обработчик по измененнию статуса по фамилии
@@ -98,4 +94,3 @@ async def delete_callback_query(call: types.CallbackQuery) -> None:
     await call.message.edit_text("Сотрудник удален")
     await send_message("Вы были заблокированы админом!", int(call_data))
     print(call_data)
-
