@@ -16,21 +16,21 @@ async def register_user(message: types.Message, state: FSMContext) -> Form.name:
 
 @register_router.message(Form.name)
 async def surname(message: types.Message, state: FSMContext) -> Form.surname:
-    await state.update_data(name=message.text)
+    await state.update_data(name=message.text.title())
     await state.set_state(Form.surname)
     await message.answer("А теперь введите свою фамилию:")
 
 
 @register_router.message(Form.surname)
 async def patronymic(message: types.Message, state: FSMContext) -> Form.patronymic:
-    await state.update_data(surname=message.text)
+    await state.update_data(surname=message.text.title())
     await state.set_state(Form.patronymic)
     await message.answer("А теперь введите своё отчество:")
 
 
 @register_router.message(Form.patronymic)
 async def result(message: types.Message, state: FSMContext) -> str:
-    await state.update_data(patronymic=message.text)
+    await state.update_data(patronymic=message.text.title())
     data = await state.get_data()
     # await state.clear()
     await message.answer(f"Имя: {data['name']} \n"
@@ -41,18 +41,17 @@ async def result(message: types.Message, state: FSMContext) -> str:
                          )
 
 
-@register_router.callback_query(F.data == "accept_register", Form.patronymic)
-async def confirm_form(message: types.Message, state: FSMContext) -> str:
+@register_router.callback_query(F.data == "accept_register")
+async def confirm_form(call: types.CallbackQuery, state: FSMContext) -> str:
     data = await state.get_data()
     await state.clear()
-    await add_user(data['name'], data['surname'], data['patronymic'], message.from_user.id)
-    # await message.edit_text("Confirm")
-    await message.answer("Confirm registration")
-    await send_accept_message(data['name'], data['surname'], data['patronymic'], message.from_user.id)
+    await add_user(data['name'], data['surname'], data['patronymic'], call.from_user.id)
+    await call.message.edit_text("Ожидайте подтверждения...")
+    await send_accept_message(data['name'], data['surname'], data['patronymic'], call.from_user.id)
 
 
-@register_router.callback_query(F.data.startswith("accept_register"), Form.patronymic)
-async def decline_form(message: types.Message, state: FSMContext) -> Form.name:
-    await message.answer("Окей. Тогда введите сове имя снова: ")
+@register_router.callback_query(F.data.startswith("decline_register"), Form.patronymic)
+async def decline_form(call: types.CallbackQuery, state: FSMContext) -> Form.name:
+    await call.message.edit_text("Окей. Тогда введите сове имя снова: ")
     await state.clear()
     await state.set_state(Form.name)

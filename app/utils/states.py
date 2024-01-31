@@ -9,3 +9,7 @@ class Form(StatesGroup):
 
 class Post(StatesGroup):
     text = State()
+
+
+class Delete(StatesGroup):
+    surname = State()

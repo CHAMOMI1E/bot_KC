@@ -39,3 +39,9 @@ def admin_keyboard(builder: ReplyKeyboardBuilder) -> ReplyKeyboardMarkup:
 def accept_text_kb(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
     builder.button(text="yes".upper(), callback_data="text_accept")
     builder.button(text="no".upper(), callback_data="text_decline")
+
+
+@kb_wrap(keyboard_type="inline", adjust_keyboard=2)
+def delete_accept(builder: InlineKeyboardBuilder, id_user: int) -> InlineKeyboardMarkup:
+    builder.button(text="yes".upper(), callback_data=f"delete_{id_user}")
+    builder.button(text="no".upper(), callback_data=f"delete_decline")

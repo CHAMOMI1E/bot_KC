@@ -10,7 +10,7 @@ async def hello(message: types.Message):
 
 
 async def check_user_in_db(message: types.Message, state: FSMContext):
-    if await get_user_by_id(message.from_user.id):
+    if await get_user_by_id_tg(message.from_user.id):
         return await message.answer(f"Ты уже зарегистрирован!")
     else:
         await state.set_state(Form.name)
