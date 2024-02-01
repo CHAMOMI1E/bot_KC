@@ -4,7 +4,6 @@ from aiogram.filters import CommandStart
 from config import ADMIN
 
 from app.views.main_view import *
-from app.views.form import *
 from app.admin import *
 
 router = Router()
@@ -12,13 +11,7 @@ router = Router()
 
 @router.message(CommandStart())
 async def cmd_start(message: Message, state: FSMContext):
-    # await message.answer(await check_user_in_db(message))
-    if message.from_user.id in ADMIN:
+    if message.from_user.id == ADMIN:
         await admin_start(message)
     else:
         await check_user_in_db(message, state)
-
-
-# @dp.message_handler(callback_query=lambda message: True)
-# async def list_users(message: Message):
-#     await message.answer("Список юзеров", reply_markup=await kb.main_keyboard())

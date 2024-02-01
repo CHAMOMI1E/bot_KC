@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import Annotated, List
+from config import DB_TOKEN
 
 from sqlalchemy import BigInteger, ForeignKey, UniqueConstraint
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
@@ -7,10 +8,8 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 bigint = Annotated[int, "BigInteger"]
 
-engine = create_async_engine(
-    "postgresql+asyncpg://chamomile:02082002@localhost:5432/test_db",
-    echo=True)
-
+engine = create_async_engine(DB_TOKEN,
+                             echo=True)
 
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 

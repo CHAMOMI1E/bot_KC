@@ -1,7 +1,7 @@
 from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 
-from app.core.keyboard import accept_keyboard, form_accept
+from app.core.keyboard import form_accept
 from app.db.request import add_user
 from app.utils.states import Form
 from app.core.sender import send_accept_message

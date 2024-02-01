@@ -15,4 +15,3 @@ async def check_user_in_db(message: types.Message, state: FSMContext):
     else:
         await state.set_state(Form.name)
         await message.answer("Привет. Для начала введи свое имя:")
-

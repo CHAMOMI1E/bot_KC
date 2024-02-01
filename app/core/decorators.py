@@ -2,12 +2,8 @@ import functools
 import inspect
 from typing import Any, Callable, Literal, Tuple, TypeVar
 
-from aiogram import types
 from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
-
-from app.core.template_env import template_env
-from config import ADMIN
 
 F = TypeVar("F", bound=Callable[..., Any])
 

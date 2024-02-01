@@ -1,28 +1,19 @@
-from typing import Tuple, Dict
+from typing import Dict
 
-from sqlalchemy.orm import make_transient, selectinload
 
 from app.db.models import Users, Accounts, async_session, Status
 from sqlalchemy import select
-from sqlalchemy import update
-
-
-async def get_users() -> Dict:
-    async with async_session() as session:
-        result = await session.execute(select(Users))
-        return result.scalars().all()
 
 
 async def get_active_users() -> Dict:
     async with async_session() as session:
-        async with async_session() as session:
-            # Запрос, чтобы получить всех пользователей со статусом ACTIVE
-            result = await session.execute(
-                select(Users).join(Accounts).where(Accounts.status == Status.ACTIVE.value)
-            )
+        # Запрос, чтобы получить всех пользователей со статусом ACTIVE
+        result = await session.execute(
+            select(Users).join(Accounts).where(Accounts.status == Status.ACTIVE.value)
+        )
 
-            # Возвращаем результат запроса
-            return result.scalars().all()
+        # Возвращаем результат запроса
+        return result.scalars().all()
 
 
 async def add_user(name: str, surname: str, patronymic: str, id_tg: int) -> None:

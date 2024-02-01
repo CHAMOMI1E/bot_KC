@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from app.core.is_admin import IsAdmin
 from app.core.sender import send_message
 
-from app.db.request import get_users, get_accept_accounts, get_account, get_user_by_id_user, edit_user_id_db, \
+from app.db.request import get_accept_accounts, get_account, get_user_by_id_user, edit_user_id_db, \
     get_active_users
 from app.core.keyboard import admin_keyboard, accept_text_kb, delete_accept
 from app.utils.states import Post, Delete
@@ -57,11 +57,13 @@ async def accept_text_def(call: types.CallbackQuery, state: FSMContext):
     for account in accounts:
         print(account.id, account.id_tg, type(account.id_tg))
         await send_message(data1["text"], account.id_tg)
+    await call.message.edit_text("Сообщение отправлено")
 
 
 @admin_router.callback_query(F.data == "text_decline")
-async def decline_text_def(message: types):
-    print("Decline text")
+async def decline_text_def(call: types.CallbackQuery, state: FSMContext):
+    await call.message.edit_text("Введите текст для сообщения:")
+    await state.set_state(Post.text)
 
 
 # TODO сделать функцию и обработчик по измененнию статуса по фамилии

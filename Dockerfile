@@ -6,7 +6,7 @@ LABEL authors="chamomile"
 RUN apk update && apk add --no-cache bash build-base
 
 # Создаем виртуальную среду и активируем ее
-RUN python -m venv /opt/venv
+RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Устанавливаем зависимости
