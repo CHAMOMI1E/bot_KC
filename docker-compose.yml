@@ -7,15 +7,13 @@ services:
 
     container_name: telegram-bot
 
-    working_dir: /pythonProject
+    working_dir: /bot_KC
+
+    env_file:
+      - .env
 
     restart: always
 
-    build:
+    build: .
 
-        context: .
-
-        dockerfile: Dockerfile
-    environment:
-      - TELEGRAM_API_TOKEN=5963841255:AAGfwJKvat72Vhq4uVUaZ9jyhsWJyOQ-sLE
-    command: sh -c "source opt/venv/bin/activate && python3 manage.py"
+    command: sh -c "python3 manage.py"

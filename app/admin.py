@@ -5,9 +5,9 @@ from app.core.is_admin import IsAdmin
 from app.core.sender import send_message
 
 from app.db.request import get_accept_accounts, get_account, get_user_by_id_user, edit_user_id_db, \
-    get_active_users
+    get_active_users, get_decline_accounts
 from app.core.keyboard import admin_keyboard, accept_text_kb, delete_accept
-from app.utils.states import Post, Delete
+from app.utils.states import Post, Delete, Unblock
 
 admin_router = Router()
 admin_router.message.filter(IsAdmin())
@@ -21,19 +21,46 @@ async def admin_start(message: types.Message):
 
 
 @admin_router.message(F.text.startswith("Просмотр"), IsAdmin())
-async def admin_show_users(message: types.Message):
+async def admin_show_users(message: types.Message, state: FSMContext):
+    await state.clear()
     users = await get_active_users()
-    print("Callback query for showing users received.")
-    text = "Список сотрудников: \n"
+    text = "Список сотрудников:\n"
     for user in users:
-        text = text + f"{user.id} {user.name} {user.surname}\n"
+        text = text + f"👉 {user.surname} {user.name} {user.patronymic}\n"
     await message.answer(f"{text}")
 
 
 @admin_router.message(F.text.startswith("Отправить"), IsAdmin())
-async def sender_news(message: types.Message, state: FSMContext):
+async def sender_news(message: types.Message, state: FSMContext) -> None:
+    await state.clear()
     await message.answer("Введите сообщение которое будет отправлено:")
     await state.set_state(Post.text)
+
+
+@admin_router.message(F.text.startswith("Удалить"), IsAdmin())
+async def decline_user_by_surname(message: types.Message, state: FSMContext) -> None:
+    await state.clear()
+    await message.answer("Введите фамилию сотрудника который не будет получать рассылок")
+    await state.set_state(Delete.surname)
+
+
+@admin_router.message(F.text.startswith("Разблокировать"), IsAdmin())
+async def aclivate_declined_user(message: types.Message, state: FSMContext) -> None:
+    await state.clear()
+    text = "Список заблокированных пользователей: \n"
+    blocks = await get_decline_accounts()
+    for block in blocks:
+        text += f"👉 {block.surname} {block.name} {block.patronymic}\n"
+    await message.answer(f"{text}" + "\nВведите фамилию пользователя которого хотите разблокировать:")
+    await state.set_state(Unblock.surname)
+
+
+@admin_router.message(Unblock.surname, IsAdmin)
+async def unblock_user(message: types.Message, state: FSMContext) -> None:
+    await state.update_data(surname=message.text)
+    data = await state.get_data()
+    data = get_blocked_user
+
 
 
 @admin_router.message(Post.text, IsAdmin())
@@ -47,8 +74,6 @@ async def accept_newsletter(message: types.Message, state: FSMContext):
 
 @admin_router.callback_query(F.data == "text_accept")
 async def accept_text_def(call: types.CallbackQuery, state: FSMContext):
-    # await message.edit_text()
-    # await message.bot.send_message(message.from_user.id, message.text)
     await call.message.edit_text("Сообщение отправленно!")
     data1 = await state.get_data()
     print(data1)
@@ -66,27 +91,22 @@ async def decline_text_def(call: types.CallbackQuery, state: FSMContext):
     await state.set_state(Post.text)
 
 
-# TODO сделать функцию и обработчик по измененнию статуса по фамилии
-@admin_router.message(F.text == "Удалить", IsAdmin())
-async def decline_user_by_surname(message: types.Message, state: FSMContext) -> None:
-    await message.answer("Введите фамилию сотрудника который не будет получать рассылок")
-    await state.set_state(Delete.surname)
-
-
 @admin_router.message(Delete.surname, IsAdmin())
 async def confirm_user_by_surname(message: types.Message, state: FSMContext) -> None:
     await state.update_data(surname=message.text)
     data = await state.get_data()
-    user = await get_account(data["surname"])
-    await state.clear()
-    print(user.id)
-    account = await get_user_by_id_user(user.id)
-    await message.answer(f"Вы уверены что хотите удалить этого сотрудника? \n"
-                         f"Фамилия: {user.surname}\n"
-                         f"Имя: {user.name}\n"
-                         f"Отчество: {user.patronymic}\n",
-                         reply_markup=delete_accept(id_user=account.id_tg)
-                         )
+    try:
+        user = await get_account(data["surname"])
+        await state.clear()
+        account = await get_user_by_id_user(user.id)
+        await message.answer(f"Вы уверены что хотите удалить этого сотрудника? \n"
+                             f"Фамилия: {user.surname}\n"
+                             f"Имя: {user.name}\n"
+                             f"Отчество: {user.patronymic}\n",
+                             reply_markup=delete_accept(id_user=account.id_tg)
+                             )
+    except Exception:
+        await message.answer("Сотрудник не найден")
 
 
 @admin_router.callback_query(F.data.startswith("delete_"), IsAdmin())

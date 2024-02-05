@@ -1,6 +1,5 @@
 from typing import Dict
 
-
 from app.db.models import Users, Accounts, async_session, Status
 from sqlalchemy import select
 
@@ -14,6 +13,35 @@ async def get_active_users() -> Dict:
 
         # Возвращаем результат запроса
         return result.scalars().all()
+
+
+async def search_admin(id_tg):
+    async with async_session() as session:
+        try:
+            blocks = await session.execute(
+                select(Accounts).filter(Accounts.status == Status.ADMIN.value)
+            )
+            return blocks.scalars().first()
+        except Exception as e:
+            print(e)
+            return None
+
+
+async def get_decline_accounts():
+    async with async_session() as session:
+        admins = await session.execute(
+            select(Users).join(Accounts, Accounts).where(Accounts.status == Status.DISABLE.value)
+        )
+        return admins.scalars().all()
+
+
+async def get_blocked_user(surname: str) -> Dict:
+    async with async_session() as session:
+        user = await session.execute(
+            select(Users).join(Accounts, Accounts).where(Accounts.status == Status.DISABLE.value,
+                                                         Users.surname == surname)
+        )
+        return user.scalars().first()
 
 
 async def add_user(name: str, surname: str, patronymic: str, id_tg: int) -> None:
@@ -74,6 +102,7 @@ async def get_user_by_id_user(id_user: int) -> Accounts:
             return existing_user
         except Exception as e:
             print(e)
+            return False
 
 
 async def get_accept_accounts():

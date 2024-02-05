@@ -18,6 +18,7 @@ class Status(Enum):
     ACTIVE = "ACTIVE"
     DISABLE = "DISABLE"
     ADMIN = "ADMIN"
+    SUPER_ADMIN = "SUPER_ADMIN"
     UNKNOWN = "UNKNOWN"
 
 

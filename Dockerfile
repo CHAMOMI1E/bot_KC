@@ -1,24 +1,18 @@
-FROM python:alpine
+FROM python:3.10
 
 LABEL authors="chamomile"
 
-# Устанавливаем зависимости
-RUN apk update && apk add --no-cache bash build-base
-
-# Создаем виртуальную среду и активируем ее
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
 
 # Устанавливаем зависимости
-WORKDIR /pythonProject
-COPY requirements.txt .
+WORKDIR bot_KC/ .
+
+COPY ./requirements.txt ./
+
 RUN pip install --upgrade pip
-RUN pip install wheel
-RUN pip install -r requirements.txt
+
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Копируем файлы и билд
 COPY ./ ./
 RUN chmod -R 777 ./
 
-# Запускаем приложение
-CMD ["python3", "manage.py"]

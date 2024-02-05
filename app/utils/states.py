@@ -13,3 +13,7 @@ class Post(StatesGroup):
 
 class Delete(StatesGroup):
     surname = State()
+
+
+class Unblock(StatesGroup):
+    surname = State()

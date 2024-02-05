@@ -6,30 +6,33 @@ from app.core.decorators import kb_wrap
 
 @kb_wrap(keyboard_type="inline", adjust_keyboard=2)
 def accept_user_keyboard(
-        builder: InlineKeyboardBuilder, user_id: int
+        builder: InlineKeyboardBuilder,
+        user_id: int,
+        surname: str
 ) -> InlineKeyboardMarkup:
     action_types = ("accept", "decline")
-    builder.button(text="ДА", callback_data=f"{action_types[0]}_{user_id}")
-    builder.button(text="НЕТ", callback_data=f"{action_types[1]}_{user_id}")
+    builder.button(text="ДА", callback_data=f"{action_types[0]}_{user_id}_{surname}")
+    builder.button(text="НЕТ", callback_data=f"{action_types[1]}_{user_id}_{surname}")
 
 
-@kb_wrap(keyboard_type="reply", adjust_keyboard=3)
+@kb_wrap(keyboard_type="reply", adjust_keyboard=(3, 1))
 def admin_keyboard(builder: ReplyKeyboardBuilder) -> ReplyKeyboardMarkup:
-    builder.button(text="Отправить")
-    builder.button(text="Удалить")
-    builder.button(text="Просмотр")
+    builder.button(text="Отправить".title())
+    builder.button(text="Удалить".title())
+    builder.button(text="Просмотр".title())
+    builder.button(text="Разблокировать".title())
 
 
 @kb_wrap(keyboard_type="inline", adjust_keyboard=2)
 def accept_text_kb(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
-    builder.button(text="yes".upper(), callback_data="text_accept")
-    builder.button(text="no".upper(), callback_data="text_decline")
+    builder.button(text="верно".upper(), callback_data="text_accept")
+    builder.button(text="неверно".upper(), callback_data="text_decline")
 
 
 @kb_wrap(keyboard_type="inline", adjust_keyboard=2)
 def delete_accept(builder: InlineKeyboardBuilder, id_user: int) -> InlineKeyboardMarkup:
-    builder.button(text="yes".upper(), callback_data=f"delete_{id_user}")
-    builder.button(text="no".upper(), callback_data=f"delete_decline")
+    builder.button(text="да".upper(), callback_data=f"delete_{id_user}")
+    builder.button(text="нет".upper(), callback_data=f"delete_decline")
 
 
 @kb_wrap(keyboard_type="inline", adjust_keyboard=2)

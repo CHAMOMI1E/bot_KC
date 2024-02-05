@@ -1,10 +1,11 @@
-from config import ADMIN
+from config import DEVELOPER_ID
 
 from aiogram.filters import BaseFilter
 from aiogram import types
+from app.db.request import search_admin
 
 
 class IsAdmin(BaseFilter):
     async def __call__(self, message: types.Message) -> bool:
-        admin_id = ADMIN
-        return message.from_user.id == admin_id
+        account = await search_admin(message.from_user.id)
+         

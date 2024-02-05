@@ -9,21 +9,16 @@ from app.core.sender import send_accept_message
 register_router = Router()
 
 
-async def register_user(message: types.Message, state: FSMContext) -> Form.name:
+@register_router.message(Form.surname)
+async def patronymic(message: types.Message, state: FSMContext) -> Form.name:
+    await state.update_data(surname=message.text.title())
     await state.set_state(Form.name)
-    await message.answer("Привет. Для начала введите свое имя:")
+    await message.answer("А теперь введите своё имя:")
 
 
 @register_router.message(Form.name)
-async def surname(message: types.Message, state: FSMContext) -> Form.surname:
+async def surname(message: types.Message, state: FSMContext) -> Form.patronymic:
     await state.update_data(name=message.text.title())
-    await state.set_state(Form.surname)
-    await message.answer("А теперь введите свою фамилию:")
-
-
-@register_router.message(Form.surname)
-async def patronymic(message: types.Message, state: FSMContext) -> Form.patronymic:
-    await state.update_data(surname=message.text.title())
     await state.set_state(Form.patronymic)
     await message.answer("А теперь введите своё отчество:")
 
@@ -33,8 +28,8 @@ async def result(message: types.Message, state: FSMContext) -> str:
     await state.update_data(patronymic=message.text.title())
     data = await state.get_data()
     await state.clear()
-    await message.answer(f"Имя: {data['name']} \n"
-                         f"Фамилия: {data['surname']} \n"
+    await message.answer(f"Фамилия: {data['surname']} \n"
+                         f"Имя: {data['name']} \n"
                          f"Отчество: {data['patronymic']} \n"
                          f"Все верно введено?",
                          reply_markup=form_accept(name=data['name'], surname=data['surname'],

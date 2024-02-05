@@ -1,4 +1,4 @@
-from config import ADMIN, TOKEN
+from config import DEVELOPER_ID, TOKEN
 from aiogram import Bot
 
 from app.core.keyboard import accept_user_keyboard
@@ -10,15 +10,14 @@ async def send_accept_message(name: str, surname: str, patronymic: str, chat_id:
         name=name,
         surname=surname,
         patronymic=patronymic,
-        id_tg=chat_id
     )
 
     bot_sender = Bot(TOKEN)
     try:
         await bot_sender.send_message(
-            chat_id=ADMIN,
+            chat_id=DEVELOPER_ID,
             text=template,
-            reply_markup=accept_user_keyboard(user_id=chat_id)
+            reply_markup=accept_user_keyboard(user_id=chat_id, surname=surname)
         )
     except Exception as e:
         print(f"Caught exception: {e}")
