@@ -14,17 +14,18 @@ async def cmd_start(message: Message, state: FSMContext):
     user = await get_user_by_id_tg(message.from_user.id)
     if user:
         if user.status == Status.ACTIVE.value:
-            return await message.answer(f"Вы уже зарегистрированы!")
+            await message.answer(f"Вы уже зарегистрированы!")
         elif user.status == Status.DISABLE.value:
-            return await message.answer(f"У вас нет прав доступа")
+            await message.answer(f"У вас нет прав доступа")
         elif user.status == Status.UNKNOWN.value:
-            return await message.answer(f"Ожидайте подтверждения администратора...")
-        elif user.status == Status.ADMIN.SUPER_ADMIN.value:
+            await message.answer(f"Ожидайте подтверждения администратора...")
+        elif user.status == Status.SUPER_ADMIN.value:
+            print("Проверку прошёл")
             await admin_start(message)
         elif user.status == Status.ADMIN.value:
             await admin_start(message)
-        elif message.from_user.id == DEVELOPER_ID:
-            await admin_start(message)
+        # elif message.from_user.id == DEVELOPER_ID:
+        #     await admin_start(message)
     else:
         await state.set_state(Form.surname)
         await message.answer("Привет. Для начала введите свою фаимилию:")

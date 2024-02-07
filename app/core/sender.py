@@ -5,6 +5,7 @@ from app.core.keyboard import accept_user_keyboard
 from app.core.template_env import template_env
 
 
+# TODO ПЕРЕДЕЛАТЬ РАССЫЛКУ АДМИНА НА СУПЕР_АДМИАН
 async def send_accept_message(name: str, surname: str, patronymic: str, chat_id: int):
     template = template_env.get_template("accept_user.html").render(
         name=name,

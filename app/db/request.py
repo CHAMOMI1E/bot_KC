@@ -1,38 +1,26 @@
-from typing import Dict
+from typing import Dict, Literal
 
 from app.db.models import Users, Accounts, async_session, Status
 from sqlalchemy import select
 
 
+# TODO ПЕРЕДЕЛАТЬ ВСЕ ЗАПРОСЫ И СДЕЛАТЬ КОД БОЛЕЕ КОМПАКНТЫМ!!!
 async def get_active_users() -> Dict:
     async with async_session() as session:
         # Запрос, чтобы получить всех пользователей со статусом ACTIVE
         result = await session.execute(
             select(Users).join(Accounts).where(Accounts.status == Status.ACTIVE.value)
         )
-
         # Возвращаем результат запроса
         return result.scalars().all()
 
 
-async def search_admin(id_tg):
+async def get_decline_users():
     async with async_session() as session:
-        try:
-            blocks = await session.execute(
-                select(Accounts).filter(Accounts.status == Status.ADMIN.value)
-            )
-            return blocks.scalars().first()
-        except Exception as e:
-            print(e)
-            return None
-
-
-async def get_decline_accounts():
-    async with async_session() as session:
-        admins = await session.execute(
-            select(Users).join(Accounts, Accounts).where(Accounts.status == Status.DISABLE.value)
+        blocks = await session.execute(
+            select(Users).join(Accounts).where(Accounts.status == Status.DISABLE.value)
         )
-        return admins.scalars().all()
+        return blocks.scalars().all()
 
 
 async def get_blocked_user(surname: str) -> Dict:
@@ -42,6 +30,20 @@ async def get_blocked_user(surname: str) -> Dict:
                                                          Users.surname == surname)
         )
         return user.scalars().first()
+
+
+async def get_disable_user_by_surname(surname: str) -> Users:
+    async with async_session() as session:
+        try:
+            account = await session.execute(
+                select(Accounts)
+                .join(Users)
+                .where(Accounts.status == Status.DISABLE.value, Users.surname == surname)
+            )
+            return account.scalars().first()
+        except Exception as e:
+            print(e)
+            return None
 
 
 async def add_user(name: str, surname: str, patronymic: str, id_tg: int) -> None:
@@ -94,7 +96,7 @@ async def get_user_by_id_tg(id_teleg: int) -> Accounts:
         return existing_user
 
 
-async def get_user_by_id_user(id_user: int) -> Accounts:
+async def get_account_by_id_user(id_user: int) -> Accounts:
     async with async_session() as session:
         try:
             result = await session.execute(select(Accounts).filter_by(id_user=id_user))
@@ -106,9 +108,6 @@ async def get_user_by_id_user(id_user: int) -> Accounts:
 
 
 async def get_accept_accounts():
-    # async with async_session() as session:
-    #     return await session.execute(select(Accounts).filter(Accounts.status == Status.ACTIVE.value)).scalars().all()
-
     async with async_session() as session:
         async with session.begin():
             stmt = select(Accounts).filter(Accounts.status == Status.ACTIVE.value)
@@ -117,8 +116,40 @@ async def get_accept_accounts():
     return accounts_with_desired_status
 
 
-async def get_account(surn: str):
+async def get_user(surn: str, action: Literal["delete", "undelete"] = "delete") -> Accounts | None:
     async with async_session() as session:
-        user = await session.execute(select(Users).filter(Users.surname == surn))
-        result = user.scalars().first()
-        return result
+        try:
+            if action == "delete":
+                user = await session.execute(
+                    select(Users)
+                    .join(Accounts)
+                    .where(Accounts.status == Status.ACTIVE.value,
+                           Users.surname == surn)
+                )
+                return user.scalars().first()
+            elif action == "undelete":
+                user = await session.execute(
+                    select(Users)
+                    .join(Accounts)
+                    .where(Accounts.status == Status.DISABLE.value,
+                           Users.surname == surn)
+                )
+                return user.scalars().first()
+        except Exception as e:
+            print(e)
+            return None
+
+
+async def get_account(id_user: int) -> Accounts | None:
+    async with async_session() as session:
+        try:
+            account = await session.execute(
+                select(Accounts)
+                .where(Accounts.id_user == id_user)
+            )
+            return account.scalars().first()
+        except Exception as e:
+            print(e)
+            return None
+
+

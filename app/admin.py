@@ -1,12 +1,12 @@
 from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 
-from app.core.is_admin import IsAdmin
+from app.core.filter.is_admin import IsAdmin
 from app.core.sender import send_message
 
-from app.db.request import get_accept_accounts, get_account, get_user_by_id_user, edit_user_id_db, \
-    get_active_users, get_decline_accounts
-from app.core.keyboard import admin_keyboard, accept_text_kb, delete_accept
+from app.db.request import get_accept_accounts, get_user, get_account_by_id_user, edit_user_id_db, \
+    get_active_users, get_decline_users, get_account
+from app.core.keyboard import admin_keyboard, accept_text_kb, delete_accept, accept_unblock
 from app.utils.states import Post, Delete, Unblock
 
 admin_router = Router()
@@ -48,19 +48,28 @@ async def decline_user_by_surname(message: types.Message, state: FSMContext) -> 
 async def aclivate_declined_user(message: types.Message, state: FSMContext) -> None:
     await state.clear()
     text = "Список заблокированных пользователей: \n"
-    blocks = await get_decline_accounts()
+    blocks = await get_decline_users()
     for block in blocks:
         text += f"👉 {block.surname} {block.name} {block.patronymic}\n"
     await message.answer(f"{text}" + "\nВведите фамилию пользователя которого хотите разблокировать:")
     await state.set_state(Unblock.surname)
 
 
-@admin_router.message(Unblock.surname, IsAdmin)
+@admin_router.message(Unblock.surname, IsAdmin())
 async def unblock_user(message: types.Message, state: FSMContext) -> None:
-    await state.update_data(surname=message.text)
+    await state.update_data(surname=message.text.title())
     data = await state.get_data()
-    data = get_blocked_user
-
+    await state.clear()
+    user = await get_user(data["surname"], "undelete")
+    if user:
+        account = await get_account(user.id)
+        await message.answer("Уверены что хотите отозвать права доступа у этого человека?\n \n"
+                             f"Фамилия: {user.surname} \n"
+                             f"Имя: {user.name} \n"
+                             f"Отчество: {user.patronymic}",
+                             reply_markup=accept_unblock(id_tg=account.id_tg))
+    else:
+        await message.answer(f"Сотрудник по фамилии {data['surname']} не найден!")
 
 
 @admin_router.message(Post.text, IsAdmin())
@@ -95,17 +104,17 @@ async def decline_text_def(call: types.CallbackQuery, state: FSMContext):
 async def confirm_user_by_surname(message: types.Message, state: FSMContext) -> None:
     await state.update_data(surname=message.text)
     data = await state.get_data()
-    try:
-        user = await get_account(data["surname"])
-        await state.clear()
-        account = await get_user_by_id_user(user.id)
-        await message.answer(f"Вы уверены что хотите удалить этого сотрудника? \n"
+    user = await get_user(data["surname"])
+    if user:
+        account = await get_account(user.id)
+        await message.answer(f"Вы уверены что хотите отозвать права доступа у этого сотрудника? \n"
                              f"Фамилия: {user.surname}\n"
                              f"Имя: {user.name}\n"
                              f"Отчество: {user.patronymic}\n",
                              reply_markup=delete_accept(id_user=account.id_tg)
                              )
-    except Exception:
+        await state.clear()
+    else:
         await message.answer("Сотрудник не найден")
 
 
@@ -113,6 +122,19 @@ async def confirm_user_by_surname(message: types.Message, state: FSMContext) -> 
 async def delete_callback_query(call: types.CallbackQuery) -> None:
     call_data = call.data.split("_")[1]
     await edit_user_id_db(int(call_data), False)
-    await call.message.edit_text("Сотрудник удален")
-    await send_message("Вы были заблокированы админом!", int(call_data))
+    await call.message.edit_text("У сотрудника были отозваны права доступа!")
+    await send_message("У вас были отозваны права доступа администратором!", int(call_data))
     print(call_data)
+
+
+@admin_router.callback_query(F.data.startswith("unblock_"))
+async def unblock_user(call: types.CallbackQuery) -> None:
+    data = call.data.split("_")[1]
+    await call.message.edit_text("Пользователю были выданы права доступа")
+    await edit_user_id_db(int(data), True)
+    await send_message("Вам выдали права доступа как сотрудника!", int(data))
+
+
+@admin_router.callback_query(F.data == "cancel")
+async def cancel(call: types.CallbackQuery) -> None:
+    await call.message.edit_text("Операция отменена")

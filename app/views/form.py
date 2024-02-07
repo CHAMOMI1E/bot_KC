@@ -24,7 +24,7 @@ async def surname(message: types.Message, state: FSMContext) -> Form.patronymic:
 
 
 @register_router.message(Form.patronymic)
-async def result(message: types.Message, state: FSMContext) -> str:
+async def result(message: types.Message, state: FSMContext) -> None:
     await state.update_data(patronymic=message.text.title())
     data = await state.get_data()
     await state.clear()
@@ -38,7 +38,7 @@ async def result(message: types.Message, state: FSMContext) -> str:
 
 
 @register_router.callback_query(F.data.startswith('forma_'))
-async def confirm_form(call: types.CallbackQuery) -> str:
+async def confirm_form(call: types.CallbackQuery) -> None:
     data = call.data.split('_')
     name, surname, patronymic = data[1], data[2], data[3]
     await add_user(name, surname, patronymic, call.from_user.id)
@@ -47,6 +47,6 @@ async def confirm_form(call: types.CallbackQuery) -> str:
 
 
 @register_router.callback_query(F.data == "form_decline")
-async def decline_form(call: types.CallbackQuery, state: FSMContext) -> Form.name:
-    await call.message.edit_text("Окей. Тогда введите сове имя снова: ")
-    await state.set_state(Form.name)
+async def decline_form(call: types.CallbackQuery, state: FSMContext) -> Form.surname:
+    await call.message.edit_text("Окей. Тогда введите свою фамилию снова: ")
+    await state.set_state(Form.surname)

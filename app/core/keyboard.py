@@ -32,10 +32,16 @@ def accept_text_kb(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
 @kb_wrap(keyboard_type="inline", adjust_keyboard=2)
 def delete_accept(builder: InlineKeyboardBuilder, id_user: int) -> InlineKeyboardMarkup:
     builder.button(text="да".upper(), callback_data=f"delete_{id_user}")
-    builder.button(text="нет".upper(), callback_data=f"delete_decline")
+    builder.button(text="нет".upper(), callback_data=f"cancel")
 
 
 @kb_wrap(keyboard_type="inline", adjust_keyboard=2)
 def form_accept(builder: InlineKeyboardBuilder, name: str, surname: str, patronymic: str) -> InlineKeyboardMarkup:
     builder.button(text="верно".upper(), callback_data=f"forma_{name}_{surname}_{patronymic}")
     builder.button(text="переписать".upper(), callback_data=f"form_decline")
+
+
+@kb_wrap(keyboard_type="inline", adjust_keyboard=2)
+def accept_unblock(builder: InlineKeyboardBuilder, id_tg: int) -> InlineKeyboardMarkup:
+    builder.button(text="да".upper(), callback_data=f"unblock_{id_tg}")
+    builder.button(text="нет".upper(), callback_data="cancel")
