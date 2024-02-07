@@ -153,3 +153,11 @@ async def get_account(id_user: int) -> Accounts | None:
             return None
 
 
+async def get_super_admin() -> Accounts | None:
+    async with async_session() as session:
+        try:
+            data = await session.execute(select(Accounts).where(Accounts.status == Status.SUPER_ADMIN.value))
+            return data.scalars().first()
+        except Exception as e:
+            print(e)
+            return None
