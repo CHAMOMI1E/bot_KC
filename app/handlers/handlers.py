@@ -1,16 +1,20 @@
-from aiogram.types import Message
+from aiogram import Router, types, F
 from aiogram.filters import CommandStart
+from aiogram.fsm.context import FSMContext
 
-from config import DEVELOPER_ID
-
-from app.views.main_view import *
-from app.admin import *
+from app.db.models import Status
+from app.db.request import get_user_by_id_tg
+from app.handlers.admin import admin_start
+from app.handlers.dev_handlers import dev_start
+from app.handlers.super_admin import super_admin_start
+from app.utils.states import Form
 
 router = Router()
 
 
 @router.message(CommandStart())
-async def cmd_start(message: Message, state: FSMContext):
+async def cmd_start(message: types.Message, state: FSMContext):
+    await state.clear()
     user = await get_user_by_id_tg(message.from_user.id)
     if user:
         if user.status == Status.ACTIVE.value:
@@ -21,11 +25,17 @@ async def cmd_start(message: Message, state: FSMContext):
             await message.answer(f"Ожидайте подтверждения администратора...")
         elif user.status == Status.SUPER_ADMIN.value:
             print("Проверку прошёл")
-            await admin_start(message)
+            await super_admin_start(message)
         elif user.status == Status.ADMIN.value:
             await admin_start(message)
-        # elif message.from_user.id == DEVELOPER_ID:
-        #     await admin_start(message)
+        elif user.status == Status.DEVELOPER.value:
+            await dev_start(message)
     else:
         await state.set_state(Form.surname)
         await message.answer("Привет. Для начала введите свою фаимилию:")
+
+
+@router.callback_query(F.data == "cancel")
+async def cancel(call: types.CallbackQuery, state: FSMContext) -> None:
+    await state.clear()
+    await call.message.edit_text("Операция отменена")

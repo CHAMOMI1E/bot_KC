@@ -1,4 +1,4 @@
-from config import DEVELOPER_ID, TOKEN
+from config import DEVELOPER_ID, TOKEN_TEST
 from aiogram import Bot
 
 from app.core.keyboard import accept_user_keyboard
@@ -14,10 +14,11 @@ async def send_accept_message(name: str, surname: str, patronymic: str, chat_id:
         patronymic=patronymic,
     )
 
-    bot_sender = Bot(TOKEN)
+    bot_sender = Bot(TOKEN_TEST)
     try:
+        sa = await get_super_admin()
         await bot_sender.send_message(
-            chat_id=get_super_admin(),
+            chat_id=sa.id_tg,
             text=template,
             reply_markup=accept_user_keyboard(user_id=chat_id, surname=surname)
         )
@@ -29,7 +30,7 @@ async def send_accept_message(name: str, surname: str, patronymic: str, chat_id:
 
 # TODO сделать так что бы рассылалось всем(подтвержденным) кроме самого отправителя
 async def send_message(text: str, chat_id: int) -> None:
-    bot_sender = Bot(TOKEN)
+    bot_sender = Bot(TOKEN_TEST)
     try:
         await bot_sender.send_message(
             chat_id=chat_id,

@@ -110,13 +110,17 @@ async def get_account_by_id_user(id_user: int) -> Accounts:
 async def get_accept_accounts():
     async with async_session() as session:
         async with session.begin():
-            stmt = select(Accounts).filter(Accounts.status == Status.ACTIVE.value)
+            stmt = select(Accounts).where(
+                Accounts.status
+                .in_(
+                    [Status.ADMIN.value, Status.SUPER_ADMIN.value, Status.DEVELOPER.value, Status.ACTIVE.value]
+                ))
             result = await session.execute(stmt)
             accounts_with_desired_status = result.scalars().all()
     return accounts_with_desired_status
 
 
-async def get_user(surn: str, action: Literal["delete", "undelete"] = "delete") -> Accounts | None:
+async def get_user(surn: str, action: Literal["delete", "undelete", None] = "delete") -> Accounts | None:
     async with async_session() as session:
         try:
             if action == "delete":
@@ -135,6 +139,13 @@ async def get_user(surn: str, action: Literal["delete", "undelete"] = "delete") 
                            Users.surname == surn)
                 )
                 return user.scalars().first()
+            else:
+                user = await session.execute(
+                    select(Users)
+                    .where(Users.surname == surn)
+                )
+                return user.scalars().first()
+
         except Exception as e:
             print(e)
             return None

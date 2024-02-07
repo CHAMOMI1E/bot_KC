@@ -52,6 +52,13 @@ class Accounts(Base):
     __table_args__ = (UniqueConstraint("id_tg", "id_user"),)
 
 
+class Statistics(Base):
+    __tablename__ = "statistics"
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    name_of_action: Mapped[str] = mapped_column()
+
+
 async def async_main():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

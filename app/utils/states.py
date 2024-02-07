@@ -17,3 +17,7 @@ class Delete(StatesGroup):
 
 class Unblock(StatesGroup):
     surname = State()
+
+
+class Change(StatesGroup):
+    surname = State()

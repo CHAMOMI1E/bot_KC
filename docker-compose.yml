@@ -16,4 +16,6 @@ services:
 
     build: .
 
+    network_mode: host
+
     command: sh -c "python3 manage.py"
