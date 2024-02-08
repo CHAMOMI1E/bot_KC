@@ -24,7 +24,6 @@ async def cmd_start(message: types.Message, state: FSMContext):
         elif user.status == Status.UNKNOWN.value:
             await message.answer(f"Ожидайте подтверждения администратора...")
         elif user.status == Status.SUPER_ADMIN.value:
-            print("Проверку прошёл")
             await super_admin_start(message)
         elif user.status == Status.ADMIN.value:
             await admin_start(message)

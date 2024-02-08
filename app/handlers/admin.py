@@ -19,7 +19,7 @@ async def admin_start(message: types.Message):
                          )
 
 
-@admin_router.message(F.text.endswith("Отправить"))
+@admin_router.message(F.text.startswith("Отправить"))
 async def sender_news(message: types.Message, state: FSMContext) -> None:
     await state.clear()
     await message.answer("Введите сообщение которое будет отправлено:")

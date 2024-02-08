@@ -8,8 +8,9 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 bigint = Annotated[int, "BigInteger"]
 
-engine = create_async_engine(DB_TOKEN,
-                             echo=True)
+engine = create_async_engine(DB_TOKEN
+                             # echo=True)
+                             )
 
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 

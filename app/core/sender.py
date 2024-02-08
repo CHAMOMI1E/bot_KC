@@ -2,7 +2,7 @@ from typing import Optional, Union
 
 from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove
 
-from config import DEVELOPER_ID, TOKEN_TEST
+from config import TOKEN_TEST
 from aiogram import Bot
 
 from app.core.keyboard import accept_user_keyboard
