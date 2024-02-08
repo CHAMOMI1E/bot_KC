@@ -1,5 +1,6 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
+from aiogram.types import ReplyKeyboardRemove
 
 from app.core.filter.is_admin import IsSuperAdmin
 from app.core.sender import send_message
@@ -94,7 +95,7 @@ async def delete_callback_query(call: types.CallbackQuery) -> None:
     call_data = call.data.split("_")[1]
     await edit_user_id_db(int(call_data), False)
     await call.message.edit_text("У сотрудника были отозваны права доступа!")
-    await send_message("У вас были отозваны права доступа администратором!", int(call_data))
+    await send_message("У вас были отозваны права доступа администратором!", int(call_data), kb=ReplyKeyboardRemove())
     print(call_data)
 
 

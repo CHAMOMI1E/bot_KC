@@ -151,14 +151,21 @@ async def get_user(surn: str, action: Literal["delete", "undelete", None] = "del
             return None
 
 
-async def get_account(id_user: int) -> Accounts | None:
+async def get_account(id_tg: int, action: Literal[None, "dev"] = None) -> Accounts | None:
     async with async_session() as session:
         try:
-            account = await session.execute(
-                select(Accounts)
-                .where(Accounts.id_user == id_user)
-            )
-            return account.scalars().first()
+            if action == "dev":
+                account = await session.execute(
+                    select(Accounts)
+                    .where(Accounts.id_tg == id_tg)
+                )
+                return account.scalars().first()
+            else:
+                account = await session.execute(
+                    select(Accounts)
+                    .where(Accounts.id_user == id_tg)
+                )
+                return account.scalars().first()
         except Exception as e:
             print(e)
             return None
@@ -172,3 +179,32 @@ async def get_super_admin() -> Accounts | None:
         except Exception as e:
             print(e)
             return None
+
+
+# noinspection PyTypeHints
+async def dev_update_status(id_tg: int,
+                            status_name: Literal[
+                                Status.ADMIN.value,
+                                Status.SUPER_ADMIN.value,
+                                Status.DISABLE.value,
+                                Status.ACTIVE.value
+                            ]) -> None:
+    async with async_session() as session:
+        try:
+            user_ex = await session.execute(select(Users).join(Accounts).where(Accounts.id_tg == id_tg))
+            user = user_ex.scalars().first()
+            statement = select(Accounts).where(Accounts.id_tg == id_tg)
+            result = await session.execute(statement)
+            account = result.scalar()
+            if account.status != status_name:
+                account.status = status_name
+                await session.commit()
+                return f"Пользователь по фамилии {user.surname} следующий статус {status_name}"
+            else:
+                await session.rollback()
+                return "У этого пользователя уже есть эта роль"
+
+        except Exception as e:
+            await session.rollback()
+            print(e)
+            return "ERROR"

@@ -44,12 +44,13 @@ def accept_unblock(builder: InlineKeyboardBuilder, id_tg: int) -> InlineKeyboard
     builder.button(text="нет".upper(), callback_data="cancel")
 
 
-@kb_wrap(keyboard_type="reply", adjust_keyboard=(3, 1))
+@kb_wrap(keyboard_type="reply", adjust_keyboard=(3, 2))
 def super_admin_keyboard(builder: ReplyKeyboardBuilder) -> ReplyKeyboardMarkup:
     builder.button(text="Отправить".title())
     builder.button(text="Удалить".title())
     builder.button(text="Просмотр".title())
     builder.button(text="Разблокировать".title())
+    builder.button(text="Сделать админом (разрабатывается)")
 
 
 @kb_wrap(keyboard_type="reply", adjust_keyboard=(3, 1, 1))
@@ -58,15 +59,13 @@ def dev_keyboard(builder: ReplyKeyboardBuilder) -> ReplyKeyboardMarkup:
     builder.button(text="Удалить".title())
     builder.button(text="Просмотр".title())
     builder.button(text="Изменить статус пользователя")
-    builder.button(text="Статистика".title())
+    builder.button(text="Статистика (NOT WORKING)".title())
 
 
-delete_rkb = ReplyKeyboardRemove()
-
-
-@kb_wrap(keyboard_type="inline", adjust_keyboard=(3, 1))
+@kb_wrap(keyboard_type="inline", adjust_keyboard=(3, 1, 1))
 def dev_change(builder: InlineKeyboardBuilder, id_tg: int) -> InlineKeyboardMarkup:
     builder.button(text="active".upper(), callback_data=f"chg-active_{id_tg}")
     builder.button(text="disable".upper(), callback_data=f"chg-disable_{id_tg}")
     builder.button(text="admin".upper(), callback_data=f"chg-admin_{id_tg}")
     builder.button(text="super admin".upper(), callback_data=f"chg-superadmin_{id_tg}")
+    builder.button(text="CANCEL".upper(), callback_data=f"cancel")

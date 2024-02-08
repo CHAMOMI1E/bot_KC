@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Annotated, List
+from typing import Annotated, List, Any
 from config import DB_TOKEN
 
 from sqlalchemy import BigInteger, ForeignKey, UniqueConstraint
@@ -28,18 +28,19 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 
 class Users(Base):
+
     __tablename__ = "users"
 
     id: Mapped[bigint] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column()
     surname: Mapped[str] = mapped_column()
     patronymic: Mapped[str] = mapped_column()
-    # departament: Mapped[str] = mapped_column()
 
     accounts: Mapped[List["Accounts"]] = relationship("Accounts", back_populates="user")
 
 
 class Accounts(Base):
+
     __tablename__ = "accounts"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
