@@ -24,3 +24,4 @@ async def dev_change_role(id_tg: int, role: str) -> None:
             return "Something went wrong 1"
     else:
         return "Something went wrong 2"
+

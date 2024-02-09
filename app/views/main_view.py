@@ -1,4 +1,6 @@
-from app.core.keyboard import admin_keyboard
+from aiogram.types import InlineKeyboardMarkup
+
+from app.core.keyboard import admin_keyboard, super_admin_keyboard, dev_keyboard
 from app.views.form import *
 from aiogram.fsm.context import FSMContext
 
@@ -23,3 +25,13 @@ async def check_user_in_db(message: types.Message, state: FSMContext):
     else:
         await state.set_state(Form.surname)
         await message.answer("Привет. Для начала введите свою фаимилию:")
+
+
+async def get_main_kb(status: str) -> InlineKeyboardMarkup:
+    if status == Status.ADMIN.value:
+        return admin_keyboard()
+    elif status == Status.SUPER_ADMIN.value:
+        return super_admin_keyboard()
+    elif status == Status.DEVELOPER.value:
+        return dev_keyboard()
+

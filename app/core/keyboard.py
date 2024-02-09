@@ -1,5 +1,5 @@
-from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
+from aiogram.types import InlineKeyboardMarkup
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from app.core.decorators import kb_wrap
 
@@ -15,8 +15,8 @@ def accept_user_keyboard(
     builder.button(text="НЕТ", callback_data=f"{action_types[1]}_{user_id}_{surname}")
 
 
-@kb_wrap(keyboard_type="reply", adjust_keyboard=1)
-def admin_keyboard(builder: ReplyKeyboardBuilder) -> ReplyKeyboardMarkup:
+@kb_wrap(keyboard_type="inline", adjust_keyboard=1)
+def admin_keyboard(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
     builder.button(text="Отправить".title())
 
 
@@ -44,22 +44,22 @@ def accept_unblock(builder: InlineKeyboardBuilder, id_tg: int) -> InlineKeyboard
     builder.button(text="нет".upper(), callback_data="cancel")
 
 
-@kb_wrap(keyboard_type="reply", adjust_keyboard=(3, 2))
-def super_admin_keyboard(builder: ReplyKeyboardBuilder) -> ReplyKeyboardMarkup:
-    builder.button(text="Отправить".title())
-    builder.button(text="Удалить".title())
-    builder.button(text="Просмотр".title())
-    builder.button(text="Разблокировать".title())
-    builder.button(text="Сделать админом (разрабатывается)")
+@kb_wrap(keyboard_type="inline", adjust_keyboard=(3, 2))
+def super_admin_keyboard(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
+    builder.button(text="Отправить".title(), callback_data="Отправить")
+    builder.button(text="Заблокировать".title(), callback_data="Заблокировать")
+    builder.button(text="Просмотр".title(), callback_data="Просмотр")
+    builder.button(text="Разблокировать".title(), callback_data="Разблокировать")
+    builder.button(text="Сделать админом (разрабатывается)", callback_data="Сделать админом")
 
 
-@kb_wrap(keyboard_type="reply", adjust_keyboard=(3, 1, 1))
-def dev_keyboard(builder: ReplyKeyboardBuilder) -> ReplyKeyboardMarkup:
-    builder.button(text="Отправить".title())
-    builder.button(text="Удалить".title())
-    builder.button(text="Просмотр".title())
-    builder.button(text="Изменить статус пользователя")
-    builder.button(text="Статистика (NOT WORKING)".title())
+@kb_wrap(keyboard_type="inline", adjust_keyboard=(3, 1, 1))
+def dev_keyboard(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
+    builder.button(text="Отправить".title(), callback_data=f"Отправить")
+    builder.button(text="Заблокировать".title(), callback_data="Заблокировать")
+    builder.button(text="Просмотр".title(), callback_data="Просмотр")
+    builder.button(text="Изменить статус пользователя", callback_data="")
+    builder.button(text="Статистика (NOT WORKING)".title(), callback_data="")
 
 
 @kb_wrap(keyboard_type="inline", adjust_keyboard=(3, 1, 1))
@@ -69,3 +69,8 @@ def dev_change(builder: InlineKeyboardBuilder, id_tg: int) -> InlineKeyboardMark
     builder.button(text="admin".upper(), callback_data=f"chg-admin_{id_tg}")
     builder.button(text="super admin".upper(), callback_data=f"chg-superadmin_{id_tg}")
     builder.button(text="CANCEL".upper(), callback_data=f"cancel")
+
+
+@kb_wrap(keyboard_type="inline", adjust_keyboard=1)
+def back_to_menu_kb(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
+    builder.button(text="← Вернутся в главное меню", callback_data="menu")

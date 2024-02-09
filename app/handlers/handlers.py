@@ -3,11 +3,12 @@ from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 
 from app.db.models import Status
-from app.db.request import get_user_by_id_tg
+from app.db.request import get_user_by_id_tg, get_account
 from app.handlers.admin import admin_start
 from app.handlers.dev_handlers import dev_start
 from app.handlers.super_admin import super_admin_start
 from app.utils.states import Form
+from app.views.main_view import get_main_kb
 
 router = Router()
 
@@ -38,3 +39,11 @@ async def cmd_start(message: types.Message, state: FSMContext):
 async def cancel(call: types.CallbackQuery, state: FSMContext) -> None:
     await state.clear()
     await call.message.edit_text("Операция отменена")
+
+
+@router.callback_query(F.data == "menu")
+async def menu(call: types.CallbackQuery, state: FSMContext) -> None:
+    await state.clear()
+    account = await get_account(call.from_user.id, "dev")
+    kb = await get_main_kb(account.id_tg)
+    await call.message.edit_text("Ваше меню", reply_markup=kb)

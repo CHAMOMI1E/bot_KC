@@ -21,7 +21,7 @@ async def super_admin_start(message: types.Message):
                          )
 
 
-@sup_admin_router.message(F.text.startswith("Просмотр"))
+@sup_admin_router.message(F.data == "Просмотр")
 async def admin_show_users(message: types.Message, state: FSMContext):
     await state.clear()
     users = await get_active_users()
@@ -31,14 +31,14 @@ async def admin_show_users(message: types.Message, state: FSMContext):
     await message.answer(f"{text}")
 
 
-@sup_admin_router.message(F.text.startswith("Удалить"))
+@sup_admin_router.message(F.data == "Удалить")
 async def decline_user_by_surname(message: types.Message, state: FSMContext) -> None:
     await state.clear()
     await message.answer("Введите фамилию сотрудника который не будет получать рассылок")
     await state.set_state(Delete.surname)
 
 
-@sup_admin_router.message(F.text.startswith("Разблокировать"))
+@sup_admin_router.message(F.data == "Разблокировать")
 async def aclivate_declined_user(message: types.Message, state: FSMContext) -> None:
     await state.clear()
     text = "Список заблокированных пользователей: \n"
@@ -47,6 +47,7 @@ async def aclivate_declined_user(message: types.Message, state: FSMContext) -> N
         text += f"👉 {block.surname} {block.name} {block.patronymic}\n"
     await message.answer(f"{text}" + "\nВведите фамилию пользователя которого хотите разблокировать:")
     await state.set_state(Unblock.surname)
+    await message
 
 
 @sup_admin_router.message(Unblock.surname)

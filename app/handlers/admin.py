@@ -19,10 +19,10 @@ async def admin_start(message: types.Message):
                          )
 
 
-@admin_router.message(F.text.startswith("Отправить"))
-async def sender_news(message: types.Message, state: FSMContext) -> None:
+@admin_router.callback_query(F.data == "Отправить")
+async def sender_news(call: types.CallbackQuery, state: FSMContext) -> None:
     await state.clear()
-    await message.answer("Введите сообщение которое будет отправлено:")
+    await call.message.edit_text("Введите сообщение которое будет отправлено:", reply_markup=)
     await state.set_state(Post.text)
 
 
