@@ -21,3 +21,7 @@ class Unblock(StatesGroup):
 
 class Change(StatesGroup):
     surname = State()
+
+
+class NewAdmin(StatesGroup):
+    surname = State()

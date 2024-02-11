@@ -17,7 +17,7 @@ def accept_user_keyboard(
 
 @kb_wrap(keyboard_type="inline", adjust_keyboard=1)
 def admin_keyboard(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
-    builder.button(text="Отправить".title())
+    builder.button(text="Отправить".title(), callback_data="Отправить")
 
 
 @kb_wrap(keyboard_type="inline", adjust_keyboard=2)
@@ -50,14 +50,14 @@ def super_admin_keyboard(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup
     builder.button(text="Заблокировать".title(), callback_data="Заблокировать")
     builder.button(text="Просмотр".title(), callback_data="Просмотр")
     builder.button(text="Разблокировать".title(), callback_data="Разблокировать")
-    builder.button(text="Сделать админом (разрабатывается)", callback_data="Сделать админом")
+    builder.button(text="Сделать админом", callback_data="Сделать админом")
 
 
 @kb_wrap(keyboard_type="inline", adjust_keyboard=(3, 1, 1))
 def dev_keyboard(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
     builder.button(text="Отправить".title(), callback_data=f"Отправить")
     builder.button(text="Заблокировать".title(), callback_data="Заблокировать")
-    builder.button(text="Просмотр".title(), callback_data="Просмотр dev")
+    builder.button(text="Просмотр".title(), callback_data="Просмотр")
     builder.button(text="Изменить статус пользователя", callback_data="Изменить статус пользователя")
     builder.button(text="Статистика (NOT WORKING)".title(), callback_data="smth")
 
@@ -74,3 +74,9 @@ def dev_change(builder: InlineKeyboardBuilder, id_tg: int) -> InlineKeyboardMark
 @kb_wrap(keyboard_type="inline", adjust_keyboard=1)
 def back_to_menu_kb(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
     builder.button(text="← Вернутся в главное меню", callback_data="menu")
+
+
+@kb_wrap(keyboard_type="inline", adjust_keyboard=2)
+def accept_admin_kb(builder: InlineKeyboardBuilder, id_tg: int) -> InlineKeyboardMarkup:
+    builder.button(text="Да", callback_data=f"admin-accept_{id_tg}")
+    builder.button(text="Нет", callback_data="cancel")

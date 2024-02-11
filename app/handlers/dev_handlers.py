@@ -2,7 +2,7 @@ from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
 from app.core.filter.is_admin import IsDeveloper
 
-from app.core.keyboard import dev_keyboard, dev_change
+from app.core.keyboard import dev_keyboard, dev_change, back_to_menu_kb
 from app.db.request import get_user, get_account
 from app.utils.states import Change
 from app.views.dev_views import dev_change_role
@@ -46,4 +46,6 @@ async def change_status(call: types.CallbackQuery) -> None:
     data = call.data.split("_")
     role = data[0]
     id_tg = int(data[1])
-    await call.message.edit_text(await dev_change_role(id_tg=id_tg, role=role))
+    await call.message.edit_text(await dev_change_role(id_tg=id_tg, role=role), reply_markup=back_to_menu_kb())
+
+

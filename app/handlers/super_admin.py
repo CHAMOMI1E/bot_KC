@@ -1,15 +1,15 @@
 from aiogram import Router, types, F
 from aiogram.fsm.context import FSMContext
-from aiogram.types import ReplyKeyboardRemove
 
 from app.core.filter.is_admin import IsSuperAdmin
 from app.core.sender import send_message
 from app.db.models import Status
 
 from app.db.request import get_user, edit_user_id_db, \
-    get_active_users, get_decline_users, get_account
-from app.core.keyboard import super_admin_keyboard, delete_accept, accept_unblock, back_to_menu_kb
-from app.utils.states import Post, Delete, Unblock
+    get_active_users, get_decline_users, get_account, dev_update_status
+from app.core.keyboard import super_admin_keyboard, delete_accept, accept_unblock, back_to_menu_kb, accept_admin_kb, \
+    admin_keyboard
+from app.utils.states import Post, Delete, Unblock, NewAdmin
 
 sup_admin_router = Router()
 sup_admin_router.message.filter(IsSuperAdmin())
@@ -34,18 +34,18 @@ async def admin_show_users(call: types.CallbackQuery, state: FSMContext):
     for user in users:
         list_of_users = list_of_users + f"👉 {user.surname} {user.name} {user.patronymic}\n"
     await call.message.edit_text(f"Список админов:\n"
-                         f"{list_of_admins}\n\n"
-                         f"Список сотрудников:\n"
-                         f"{list_of_users}")
+                                 f"{list_of_admins}\n\n"
+                                 f"Список сотрудников:\n"
+                                 f"{list_of_users}")
     await call.message.answer("Хотите вернутся в главное меню?", reply_markup=back_to_menu_kb())
 
 
 @sup_admin_router.callback_query(F.data == "Заблокировать")
 async def decline_user_by_surname(call: types.CallbackQuery, state: FSMContext) -> None:
     await state.clear()
-    await call.message.edit_text("Введите фамилию сотрудника который не будет получать рассылок", reply_markup=back_to_menu_kb())
+    await call.message.edit_text("Введите фамилию сотрудника который не будет получать рассылок",
+                                 reply_markup=back_to_menu_kb())
     await state.set_state(Delete.surname)
-
 
 
 @sup_admin_router.callback_query(F.data == "Разблокировать")
@@ -68,7 +68,7 @@ async def unblock_user(message: types.Message, state: FSMContext) -> None:
     user = await get_user(data["surname"], "undelete")
     if user:
         account = await get_account(user.id)
-        await message.answer("Уверены что хотите отозвать права доступа у этого человека?\n \n"
+        await message.answer("Уверены что хотите вернуть права доступа у этого человека?\n \n"
                              f"Фамилия: {user.surname} \n"
                              f"Имя: {user.name} \n"
                              f"Отчество: {user.patronymic}",
@@ -98,7 +98,7 @@ async def confirm_user_by_surname(message: types.Message, state: FSMContext) -> 
                              )
         await state.clear()
     else:
-        await message.answer("Сотрудник не найден")
+        await message.answer("Сотрудник не найден", reply_markup=back_to_menu_kb())
 
 
 @sup_admin_router.callback_query(F.data.startswith("delete_"))
@@ -116,3 +116,36 @@ async def unblock_user(call: types.CallbackQuery) -> None:
     await call.message.edit_text("Пользователю были выданы права доступа")
     await edit_user_id_db(int(data), True)
     await send_message("Вам выдали права доступа как сотрудника!", int(data))
+
+
+@sup_admin_router.callback_query(F.data == "Сделать админом")
+async def add_admin(call: types.CallbackQuery, state: FSMContext) -> None:
+    await state.clear()
+    await call.message.edit_text("Введите фамилию сотрудника которому надо выдать права администратора",
+                                 reply_markup=back_to_menu_kb())
+    await state.set_state(NewAdmin.surname)
+
+
+@sup_admin_router.message(NewAdmin.surname)
+async def add_admin_complite(message: types.Message, state: FSMContext) -> None:
+    await state.update_data(surname=message.text)
+    data = await state.get_data()
+    await state.clear()
+    user = await get_user(data["surname"])
+    if user:
+        account = await get_account(user.id)
+        if account.status not in [Status.ADMIN.value, Status.SUPER_ADMIN.value, Status.DEVELOPER.value,
+                                  Status.DISABLE.value]:
+            await message.answer(f"Вы уверены что хотите выдать этому сотруднику права доступа админа?\n"
+                                 f"Фамилия: {user.surname}\n"
+                                 f"Имя: {user.name}\n"
+                                 f"Отчество: {user.patronymic}\n", reply_markup=accept_admin_kb(id_tg=account.id_tg))
+        else:
+            await message.answer("У этого человека статус равный вам или выше, обращайтесь к разработчику!", reply_markup=back_to_menu_kb())
+
+
+@sup_admin_router.callback_query(F.data.stratswith("admin-accept_"))
+async def comlite_admin(call: types.CallbackQuery) -> None:
+    data = call.data.split("_")[1]
+    await call.message.edit_text(await dev_update_status(int(data), Status.ADMIN.value), reply_markup=back_to_menu_kb())
+    await send_message("Вам выдали права администратора", int(data), admin_keyboard())
