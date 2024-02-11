@@ -2,6 +2,7 @@ from aiogram import Router, types, F
 from aiogram.filters import CommandStart
 from aiogram.fsm.context import FSMContext
 
+from app.core.keyboard import back_to_menu_kb, admin_keyboard, super_admin_keyboard, dev_keyboard
 from app.db.models import Status
 from app.db.request import get_user_by_id_tg, get_account
 from app.handlers.admin import admin_start
@@ -38,12 +39,20 @@ async def cmd_start(message: types.Message, state: FSMContext):
 @router.callback_query(F.data == "cancel")
 async def cancel(call: types.CallbackQuery, state: FSMContext) -> None:
     await state.clear()
-    await call.message.edit_text("Операция отменена")
+    await call.message.edit_text("Операция отменена", reply_markup=back_to_menu_kb())
 
 
 @router.callback_query(F.data == "menu")
 async def menu(call: types.CallbackQuery, state: FSMContext) -> None:
     await state.clear()
     account = await get_account(call.from_user.id, "dev")
-    kb = await get_main_kb(account.id_tg)
-    await call.message.edit_text("Ваше меню", reply_markup=kb)
+    status = account.status
+    if status == Status.ADMIN.value:
+        await call.message.edit_text("Вы сейчас находитесь в главном меню!",
+                                     reply_markup=admin_keyboard())
+    elif status == Status.SUPER_ADMIN.value:
+        await call.message.edit_text("Вы сейчас находитесь в главном меню!",
+                                     reply_markup=super_admin_keyboard())
+    elif status == Status.DEVELOPER.value:
+        await call.message.edit_text("Вы сейчас находитесь в главном меню!",
+                                     reply_markup=dev_keyboard())

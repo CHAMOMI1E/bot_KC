@@ -57,9 +57,9 @@ def super_admin_keyboard(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup
 def dev_keyboard(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
     builder.button(text="Отправить".title(), callback_data=f"Отправить")
     builder.button(text="Заблокировать".title(), callback_data="Заблокировать")
-    builder.button(text="Просмотр".title(), callback_data="Просмотр")
-    builder.button(text="Изменить статус пользователя", callback_data="")
-    builder.button(text="Статистика (NOT WORKING)".title(), callback_data="")
+    builder.button(text="Просмотр".title(), callback_data="Просмотр dev")
+    builder.button(text="Изменить статус пользователя", callback_data="Изменить статус пользователя")
+    builder.button(text="Статистика (NOT WORKING)".title(), callback_data="smth")
 
 
 @kb_wrap(keyboard_type="inline", adjust_keyboard=(3, 1, 1))

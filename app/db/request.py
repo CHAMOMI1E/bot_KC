@@ -8,11 +8,18 @@ from sqlalchemy import select
 async def get_active_users() -> Dict:
     async with async_session() as session:
         # Запрос, чтобы получить всех пользователей со статусом ACTIVE
-        result = await session.execute(
-            select(Users).join(Accounts).where(Accounts.status == Status.ACTIVE.value)
+        admins = await session.execute(
+            select(Users).join(Accounts).where(
+                Accounts.status == Status.ADMIN.value)
         )
+        users = await session.execute(
+            select(Users).join(Accounts).where(
+                Accounts.status == Status.ACTIVE.value
+            )
+        )
+
         # Возвращаем результат запроса
-        return result.scalars().all()
+        return admins.scalars().all(), users.scalars().all()
 
 
 async def get_decline_users():
@@ -199,7 +206,7 @@ async def dev_update_status(id_tg: int,
             if account.status != status_name:
                 account.status = status_name
                 await session.commit()
-                return f"Пользователь по фамилии {user.surname} следующий статус {status_name}"
+                return f"Пользователь по фамилии {user.surname} имеет следующий статус {status_name}"
             else:
                 await session.rollback()
                 return "У этого пользователя уже есть эта роль"

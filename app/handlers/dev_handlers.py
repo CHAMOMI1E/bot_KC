@@ -9,6 +9,7 @@ from app.views.dev_views import dev_change_role
 
 dev_router = Router()
 dev_router.message.filter(IsDeveloper())
+dev_router.callback_query.filter(IsDeveloper())
 
 
 async def dev_start(message: types.Message):
@@ -19,17 +20,16 @@ async def dev_start(message: types.Message):
                          )
 
 
-@dev_router.message(F.text == "Изменить статус пользователя")
-async def start_change_status(message: types.Message, state: FSMContext):
+@dev_router.callback_query(F.data == "Изменить статус пользователя")
+async def start_change_status(call: types.CallbackQuery, state: FSMContext):
     await state.set_state(Change.surname)
-    await message.answer("Введите фамилию сотрудника которому надо сменить статус:")
+    await call.message.edit_text("Введите фамилию сотрудника которому надо сменить статус:")
 
 
 @dev_router.message(Change.surname)
 async def confirm_change_status(message: types.Message, state: FSMContext):
     await state.update_data(surname=message.text)
     data = await state.get_data()
-    print("работает")
     await state.clear()
     user = await get_user(surn=data["surname"], action=None)
     if user:
