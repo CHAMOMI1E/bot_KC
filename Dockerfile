@@ -1,4 +1,4 @@
-FROM python:3.10
+FROM python:3.8
 
 LABEL authors="chamomile"
 
@@ -9,17 +9,9 @@ WORKDIR /bot_KC
 
 COPY ./requirements.txt ./
 
-
-
-# Устанавливаем зависимости и gunicorn
-
 RUN pip install --upgrade pip
 
 RUN pip install --no-cache-dir -r ./requirements.txt
-
-
-
-# Копируем файлы и билд
 
 COPY ./ ./
 

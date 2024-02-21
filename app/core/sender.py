@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing_extensions import Optional, Union
 
 from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup, ReplyKeyboardRemove
 

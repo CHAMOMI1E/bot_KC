@@ -1,5 +1,6 @@
 from enum import Enum
-from typing import Annotated, List, Any
+from datetime import datetime
+from typing_extensions import Annotated, List
 from config import DB_TOKEN
 
 from sqlalchemy import BigInteger, ForeignKey, UniqueConstraint
@@ -8,9 +9,8 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 bigint = Annotated[int, "BigInteger"]
 
-engine = create_async_engine(DB_TOKEN
-                             # echo=True)
-                             )
+engine = create_async_engine(DB_TOKEN,
+                             echo=True)
 
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
@@ -28,8 +28,8 @@ class Base(AsyncAttrs, DeclarativeBase):
     pass
 
 
-class Users(Base):
 
+class Users(Base):
     __tablename__ = "users"
 
     id: Mapped[bigint] = mapped_column(primary_key=True, autoincrement=True)
@@ -41,7 +41,6 @@ class Users(Base):
 
 
 class Accounts(Base):
-
     __tablename__ = "accounts"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
@@ -59,6 +58,7 @@ class Statistics(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name_of_action: Mapped[str] = mapped_column()
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now(), nullable=False)
 
 
 async def async_main():

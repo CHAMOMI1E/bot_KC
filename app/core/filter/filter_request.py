@@ -2,7 +2,7 @@ from app.db.models import Accounts, async_session, Status
 from sqlalchemy import select
 
 
-async def search_admin(id_tg) -> Accounts | None:
+async def search_admin(id_tg) -> Accounts or None:
     async with async_session() as session:
         try:
             blocks = await session.execute(
@@ -16,7 +16,7 @@ async def search_admin(id_tg) -> Accounts | None:
             return None
 
 
-async def search_super_admin(id_tg) -> Accounts | None:
+async def search_super_admin(id_tg) -> Accounts or None:
     async with async_session() as session:
         try:
             blocks = await session.execute(
@@ -30,7 +30,7 @@ async def search_super_admin(id_tg) -> Accounts | None:
             return None
 
 
-async def search_developer(id_tg) -> Accounts | None:
+async def search_developer(id_tg) -> Accounts or None:
     async with async_session() as session:
         try:
             blocks = await session.execute(

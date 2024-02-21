@@ -9,7 +9,6 @@ from app.handlers.admin import admin_start
 from app.handlers.dev_handlers import dev_start
 from app.handlers.super_admin import super_admin_start
 from app.utils.states import Form
-from app.views.main_view import get_main_kb
 
 router = Router()
 

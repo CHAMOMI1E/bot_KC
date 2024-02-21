@@ -1,6 +1,6 @@
 import functools
 import inspect
-from typing import Any, Callable, Literal, Tuple, TypeVar
+from typing_extensions import Any, Callable, Literal, Tuple, TypeVar
 
 from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
@@ -11,22 +11,22 @@ F = TypeVar("F", bound=Callable[..., Any])
 # декоратор собственного производства для создания клавиатуры, инструкции будут описаны лично
 def kb_wrap(
         keyboard_type: Literal["reply", "inline"] = "inline",
-        adjust_keyboard: int | Tuple[int] = 1,
+        adjust_keyboard: int or Tuple[int] = 1,
         **builder_params,
 ):
     def get_keyboard_builder(
             keyboard_type: Literal["reply", "inline"]
-    ) -> ReplyKeyboardBuilder | InlineKeyboardBuilder:
+    ) -> ReplyKeyboardBuilder or InlineKeyboardBuilder:
         if keyboard_type == "inline":
             return InlineKeyboardBuilder()
         elif keyboard_type == "reply":
             return ReplyKeyboardBuilder()
 
     def apply_builder_changes(
-            builder: InlineKeyboardBuilder | ReplyKeyboardBuilder,
-            adjust_keyboard: int | Tuple[int] = 1,
+            builder: InlineKeyboardBuilder or ReplyKeyboardBuilder,
+            adjust_keyboard: int or Tuple[int] = 1,
             **builder_params,
-    ) -> InlineKeyboardMarkup | ReplyKeyboardMarkup:
+    ) -> InlineKeyboardMarkup or ReplyKeyboardMarkup:
         if adjust_keyboard:
             if isinstance(adjust_keyboard, int):
                 adjust_keyboard = (adjust_keyboard,)
@@ -38,7 +38,7 @@ def kb_wrap(
         @functools.wraps(func)
         async def wrapped_f(
                 *args: Any, **kwargs: Any
-        ) -> InlineKeyboardMarkup | ReplyKeyboardMarkup:
+        ) -> InlineKeyboardMarkup or ReplyKeyboardMarkup:
             builder = get_keyboard_builder(keyboard_type=keyboard_type)
 
             await func(builder=builder, *args, **kwargs)
@@ -48,7 +48,7 @@ def kb_wrap(
         @functools.wraps(func)
         def sync_wrapped_f(
                 *args: Any, **kwargs: Any
-        ) -> InlineKeyboardMarkup | ReplyKeyboardMarkup:
+        ) -> InlineKeyboardMarkup or ReplyKeyboardMarkup:
             builder = get_keyboard_builder(keyboard_type=keyboard_type)
 
             func(builder=builder, *args, **kwargs)

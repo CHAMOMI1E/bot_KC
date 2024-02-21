@@ -1,6 +1,6 @@
-from typing import Dict, Literal
+from typing_extensions import Dict, Literal
 
-from app.db.models import Users, Accounts, async_session, Status
+from app.db.models import Users, Accounts, async_session, Status, Statistics
 from sqlalchemy import select
 
 
@@ -127,7 +127,7 @@ async def get_accept_accounts():
     return accounts_with_desired_status
 
 
-async def get_user(surn: str, action: Literal["delete", "undelete", None] = "delete") -> Accounts | None:
+async def get_user(surn: str, action: Literal["delete", "undelete", None] = "delete") -> Accounts or None:
     async with async_session() as session:
         try:
             if action == "delete":
@@ -158,7 +158,7 @@ async def get_user(surn: str, action: Literal["delete", "undelete", None] = "del
             return None
 
 
-async def get_account(id_tg: int, action: Literal[None, "dev"] = None) -> Accounts | None:
+async def get_account(id_tg: int, action: Literal[None, "dev"] = None) -> Accounts or None:
     async with async_session() as session:
         try:
             if action == "dev":
@@ -178,7 +178,7 @@ async def get_account(id_tg: int, action: Literal[None, "dev"] = None) -> Accoun
             return None
 
 
-async def get_super_admin() -> Accounts | None:
+async def get_super_admin() -> Accounts or None:
     async with async_session() as session:
         try:
             data = await session.execute(select(Accounts).where(Accounts.status == Status.SUPER_ADMIN.value))
@@ -217,3 +217,20 @@ async def dev_update_status(id_tg: int,
             return "ERROR"
 
 
+async def add_stat(
+        action: Literal[
+            "send message",
+            "confirm user",
+            "decline user",
+            "add admin",
+            "add super admin",
+            "show user",
+            "unblock user"] = None) -> None:
+    async with async_session() as session:
+        try:
+            stat = Statistics(name_of_action=action)
+            await session.add(stat)
+            await session.commit()
+        except Exception as e:
+            print(e)
+            await session.rollback()
