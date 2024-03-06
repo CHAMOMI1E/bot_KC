@@ -27,20 +27,21 @@ async def surname(message: types.Message, state: FSMContext) -> Form.patronymic:
 async def result(message: types.Message, state: FSMContext) -> None:
     await state.update_data(patronymic=message.text.title())
     data = await state.get_data()
-    await state.clear()
+    await state.set_state(None)
+    print(data)
     await message.answer(f"Фамилия: {data['surname']} \n"
                          f"Имя: {data['name']} \n"
                          f"Отчество: {data['patronymic']} \n"
                          f"Все верно введено?",
-                         reply_markup=form_accept(name=data['name'], surname=data['surname'],
-                                                  patronymic=data['patronymic'])
+                         reply_markup=form_accept()
                          )
 
 
-@register_router.callback_query(F.data.startswith('forma_'))
-async def confirm_form(call: types.CallbackQuery) -> None:
-    data = call.data.split('_')
-    name, surname, patronymic = data[1], data[2], data[3]
+@register_router.callback_query(F.data == 'form_accept')
+async def confirm_form(call: types.CallbackQuery, state: FSMContext) -> None:
+    data = await state.get_data()
+    await state.clear()
+    name, surname, patronymic = data['name'], data['surname'], data['patronymic']
     await add_user(name, surname, patronymic, call.from_user.id)
     await call.message.edit_text("Ожидайте подтверждения...")
     await send_accept_message(name, surname, patronymic, call.from_user.id)

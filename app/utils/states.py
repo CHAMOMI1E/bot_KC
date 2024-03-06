@@ -25,3 +25,7 @@ class Change(StatesGroup):
 
 class NewAdmin(StatesGroup):
     surname = State()
+
+
+class TakeAwayAdmin(StatesGroup):
+    surname = State()

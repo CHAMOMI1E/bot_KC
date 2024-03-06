@@ -4,7 +4,6 @@ from app.db.models import Users, Accounts, async_session, Status, Statistics
 from sqlalchemy import select
 
 
-# TODO ПЕРЕДЕЛАТЬ ВСЕ ЗАПРОСЫ И СДЕЛАТЬ КОД БОЛЕЕ КОМПАКНТЫМ!!!
 async def get_active_users() -> Dict:
     async with async_session() as session:
         # Запрос, чтобы получить всех пользователей со статусом ACTIVE
@@ -127,7 +126,7 @@ async def get_accept_accounts():
     return accounts_with_desired_status
 
 
-async def get_user(surn: str, action: Literal["delete", "undelete", None] = "delete") -> Accounts or None:
+async def get_user(surn: str, action: Literal["delete", "undelete", "admin", None] = "delete") -> Accounts or None:
     async with async_session() as session:
         try:
             if action == "delete":
@@ -137,7 +136,6 @@ async def get_user(surn: str, action: Literal["delete", "undelete", None] = "del
                     .where(Accounts.status == Status.ACTIVE.value,
                            Users.surname == surn)
                 )
-                return user.scalars().first()
             elif action == "undelete":
                 user = await session.execute(
                     select(Users)
@@ -145,14 +143,19 @@ async def get_user(surn: str, action: Literal["delete", "undelete", None] = "del
                     .where(Accounts.status == Status.DISABLE.value,
                            Users.surname == surn)
                 )
-                return user.scalars().first()
+            elif action == "admin":
+                user = await session.execute(
+                    select(Users)
+                    .join(Accounts)
+                    .where(Accounts.status == Status.ADMIN.value,
+                           Users.surname == surn)
+                )
             else:
                 user = await session.execute(
                     select(Users)
                     .where(Users.surname == surn)
                 )
-                return user.scalars().first()
-
+            return user.scalars().first()
         except Exception as e:
             print(e)
             return None

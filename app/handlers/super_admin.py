@@ -9,7 +9,7 @@ from app.db.request import get_user, edit_user_id_db, \
     get_active_users, get_decline_users, get_account, dev_update_status
 from app.core.keyboard import super_admin_keyboard, delete_accept, accept_unblock, back_to_menu_kb, accept_admin_kb, \
     admin_keyboard
-from app.utils.states import Post, Delete, Unblock, NewAdmin
+from app.utils.states import Post, Delete, Unblock, NewAdmin, TakeAwayAdmin
 
 sup_admin_router = Router()
 sup_admin_router.message.filter(IsSuperAdmin())
@@ -58,6 +58,38 @@ async def aclivate_declined_user(call: types.CallbackQuery, state: FSMContext) -
     await call.message.edit_text(f"{text}" + "\nВведите фамилию пользователя которого хотите разблокировать:",
                                  reply_markup=back_to_menu_kb())
     await state.set_state(Unblock.surname)
+
+
+@sup_admin_router.callback_query(F.data == "Сделать админом")
+async def add_admin(call: types.CallbackQuery, state: FSMContext) -> None:
+    await state.clear()
+    await call.message.edit_text("Введите фамилию сотрудника которому надо выдать права администратора",
+                                 reply_markup=back_to_menu_kb())
+    await state.set_state(NewAdmin.surname)
+
+
+@sup_admin_router.callback_query(F.data == "Отобрать права админа")
+async def take_away_admin(call: types.CallbackQuery, state: FSMContext) -> TakeAwayAdmin.surname:
+    await state.clear()
+    await call.message.edit_text("Введите фамилию сотрудника у которого хотите отобрать права админа",
+                                 reply_markup=back_to_menu_kb())
+    await state.set_state(TakeAwayAdmin.surname)
+
+
+@sup_admin_router.callback_query(TakeAwayAdmin.surname)
+async def remove_admin(call: types.CallbackQuery, state: FSMContext) -> None:
+    data = await state.get_data()
+    await state.set_state(None)
+    await call.message.delete()
+    try:
+        user = await get_user(data["surname"], Status.ADMIN.value)
+        await call.message.answer("Вы уверены что хотите отобрать права администратора у этого чловека?\n"
+                                  f"Фамилия: {user.surname}\n"
+                                  f"Имя: {user.name}\n"
+                                  f"Отчество: {user.patronymic}\n")
+    except Exception as e:
+        print(e)
+        await call.message.answer("Что-то пошло не так... Вернитесь в главное меню", reply_markup=back_to_menu_kb())
 
 
 @sup_admin_router.message(Unblock.surname)
@@ -118,14 +150,6 @@ async def unblock_user(call: types.CallbackQuery) -> None:
     await send_message("Вам выдали права доступа как сотрудника!", int(data))
 
 
-@sup_admin_router.callback_query(F.data == "Сделать админом")
-async def add_admin(call: types.CallbackQuery, state: FSMContext) -> None:
-    await state.clear()
-    await call.message.edit_text("Введите фамилию сотрудника которому надо выдать права администратора",
-                                 reply_markup=back_to_menu_kb())
-    await state.set_state(NewAdmin.surname)
-
-
 @sup_admin_router.message(NewAdmin.surname)
 async def add_admin_complite(message: types.Message, state: FSMContext) -> None:
     await state.update_data(surname=message.text)
@@ -141,7 +165,8 @@ async def add_admin_complite(message: types.Message, state: FSMContext) -> None:
                                  f"Имя: {user.name}\n"
                                  f"Отчество: {user.patronymic}\n", reply_markup=accept_admin_kb(id_tg=account.id_tg))
         else:
-            await message.answer("У этого человека статус равный вам или выше, обращайтесь к разработчику!", reply_markup=back_to_menu_kb())
+            await message.answer("У этого человека статус равный вам или выше, обращайтесь к разработчику!",
+                                 reply_markup=back_to_menu_kb())
 
 
 @sup_admin_router.callback_query(F.data.stratswith("admin-accept_"))

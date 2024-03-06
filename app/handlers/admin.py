@@ -31,6 +31,7 @@ async def sender_news(call: types.CallbackQuery, state: FSMContext) -> None:
 async def accept_newsletter(message: types.Message, state: FSMContext):
     await state.update_data(text=message.text)
     data = await state.get_data()
+    await state.set_state(None)
     await message.answer(f"Вы уверены что хотите отправить это сообщение?\n"
                          f"{data['text']}",
                          reply_markup=accept_text_kb())

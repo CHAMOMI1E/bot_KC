@@ -33,8 +33,8 @@ def delete_accept(builder: InlineKeyboardBuilder, id_user: int) -> InlineKeyboar
 
 
 @kb_wrap(keyboard_type="inline", adjust_keyboard=2)
-def form_accept(builder: InlineKeyboardBuilder, name: str, surname: str, patronymic: str) -> InlineKeyboardMarkup:
-    builder.button(text="верно".upper(), callback_data=f"forma_{name}_{surname}_{patronymic}")
+def form_accept(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
+    builder.button(text="верно".upper(), callback_data=f"form_accept")
     builder.button(text="переписать".upper(), callback_data=f"form_decline")
 
 
@@ -44,13 +44,14 @@ def accept_unblock(builder: InlineKeyboardBuilder, id_tg: int) -> InlineKeyboard
     builder.button(text="нет".upper(), callback_data="cancel")
 
 
-@kb_wrap(keyboard_type="inline", adjust_keyboard=(3, 2))
+@kb_wrap(keyboard_type="inline", adjust_keyboard=(3, 1, 2))
 def super_admin_keyboard(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
     builder.button(text="Отправить".title(), callback_data="Отправить")
     builder.button(text="Заблокировать".title(), callback_data="Заблокировать")
     builder.button(text="Просмотр".title(), callback_data="Просмотр")
     builder.button(text="Разблокировать".title(), callback_data="Разблокировать")
-    builder.button(text="Сделать админомакщ", callback_data="Сделать админом")
+    builder.button(text="Сделать админом", callback_data="Сделать админом")
+    builder.button(text="Отобрать права админа", callback_data="Отобрать права админа")
 
 
 @kb_wrap(keyboard_type="inline", adjust_keyboard=(3, 1, 1))

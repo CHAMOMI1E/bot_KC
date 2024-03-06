@@ -28,7 +28,6 @@ class Base(AsyncAttrs, DeclarativeBase):
     pass
 
 
-
 class Users(Base):
     __tablename__ = "users"
 
