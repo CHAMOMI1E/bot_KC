@@ -126,10 +126,11 @@ async def get_accept_accounts():
     return accounts_with_desired_status
 
 
-async def get_user(surn: str, action: Literal["delete", "undelete", "admin", None] = "delete") -> Accounts or None:
+async def get_user(surn: str,
+                   action: Literal["delete", "undelete", "admin", "ta_admin", None] = "delete") -> Accounts or None:
     async with async_session() as session:
         try:
-            if action == "delete":
+            if action == "delete" or "admin":
                 user = await session.execute(
                     select(Users)
                     .join(Accounts)
@@ -144,6 +145,13 @@ async def get_user(surn: str, action: Literal["delete", "undelete", "admin", Non
                            Users.surname == surn)
                 )
             elif action == "admin":
+                user = await session.execute(
+                    select(Users)
+                    .join(Accounts)
+                    .where(Accounts.status == Status.ADMIN.value,
+                           Users.surname == surn)
+                )
+            elif action == "ta_admin":
                 user = await session.execute(
                     select(Users)
                     .join(Accounts)

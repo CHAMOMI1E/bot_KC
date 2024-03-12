@@ -81,3 +81,9 @@ def back_to_menu_kb(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
 def accept_admin_kb(builder: InlineKeyboardBuilder, id_tg: int) -> InlineKeyboardMarkup:
     builder.button(text="Да", callback_data=f"admin-accept_{id_tg}")
     builder.button(text="Нет", callback_data="cancel")
+
+
+@kb_wrap(keyboard_type="inline", adjust_keyboard=2)
+def take_away_admin_kb(builder: InlineKeyboardBuilder, id_tg: int) -> InlineKeyboardMarkup:
+    builder.button(text="Верно", callback_data=f"take-away-admin_{id_tg}")
+    builder.button(text="Неверно", callback_data="cancel")

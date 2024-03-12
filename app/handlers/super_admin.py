@@ -8,7 +8,7 @@ from app.db.models import Status
 from app.db.request import get_user, edit_user_id_db, \
     get_active_users, get_decline_users, get_account, dev_update_status
 from app.core.keyboard import super_admin_keyboard, delete_accept, accept_unblock, back_to_menu_kb, accept_admin_kb, \
-    admin_keyboard
+    admin_keyboard, take_away_admin_kb
 from app.utils.states import Post, Delete, Unblock, NewAdmin, TakeAwayAdmin
 
 sup_admin_router = Router()
@@ -27,8 +27,8 @@ async def super_admin_start(message: types.Message):
 async def admin_show_users(call: types.CallbackQuery, state: FSMContext):
     await state.clear()
     admins, users = await get_active_users()
-    list_of_users = ""
-    list_of_admins = ""
+    list_of_users: str = ""
+    list_of_admins: str = ""
     for admin in admins:
         list_of_admins = list_of_admins + f"👉 {admin.surname} {admin.name} {admin.patronymic}\n"
     for user in users:
@@ -81,14 +81,15 @@ async def remove_admin(call: types.CallbackQuery, state: FSMContext) -> None:
     data = await state.get_data()
     await state.set_state(None)
     await call.message.delete()
-    try:
-        user = await get_user(data["surname"], Status.ADMIN.value)
+    user = await get_user(data["surname"], 'ta_admin')
+    if user:
+        account = await get_user(data["surname"])
         await call.message.answer("Вы уверены что хотите отобрать права администратора у этого чловека?\n"
                                   f"Фамилия: {user.surname}\n"
                                   f"Имя: {user.name}\n"
-                                  f"Отчество: {user.patronymic}\n")
-    except Exception as e:
-        print(e)
+                                  f"Отчество: {user.patronymic}\n",
+                                  reply_markup=take_away_admin_kb(id_tg=account.id_tg))
+    else:
         await call.message.answer("Что-то пошло не так... Вернитесь в главное меню", reply_markup=back_to_menu_kb())
 
 
@@ -155,7 +156,7 @@ async def add_admin_complite(message: types.Message, state: FSMContext) -> None:
     await state.update_data(surname=message.text)
     data = await state.get_data()
     await state.clear()
-    user = await get_user(data["surname"])
+    user = await get_user(surn=data["surname"], action='admin')
     if user:
         account = await get_account(user.id)
         if account.status not in [Status.ADMIN.value, Status.SUPER_ADMIN.value, Status.DEVELOPER.value,
@@ -174,3 +175,11 @@ async def comlite_admin(call: types.CallbackQuery) -> None:
     data = call.data.split("_")[1]
     await call.message.edit_text(await dev_update_status(int(data), Status.ADMIN.value), reply_markup=back_to_menu_kb())
     await send_message("Вам выдали права администратора", int(data), admin_keyboard())
+
+
+@sup_admin_router.callback_query(F.data.stratswith("take-away-admin_"))
+async def take_admin(call: types.CallbackQuery) -> None:
+    data = call.data.split("_")[1]
+    await call.message.edit_text(await dev_update_status(int(data), Status.ACTIVE.value),
+                                 reply_markup=back_to_menu_kb())
+    await send_message("У вам были отозваны права администратора", int(data), None)
