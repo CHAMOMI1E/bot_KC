@@ -31,7 +31,7 @@ async def confirm_change_status(message: types.Message, state: FSMContext):
     await state.update_data(surname=message.text)
     data = await state.get_data()
     await state.clear()
-    user = await get_user(surn=data["surname"], action=None)
+    user = await get_user(surn=data["surname"], action="developer")
     if user:
         account = await get_account(user.id)
         await message.answer(f"Фамилия: {user.surname}\n"
@@ -39,6 +39,8 @@ async def confirm_change_status(message: types.Message, state: FSMContext):
                              f"Отчество: {user.patronymic}\n"
                              f"Текущий статус: {account.status}\n\n"
                              f"На какой статус надо поменять?", reply_markup=dev_change(id_tg=account.id_tg))
+    else:
+        await message.answer("Что-то случилось!")
 
 
 @dev_router.callback_query(F.data.startswith("chg"))
@@ -47,6 +49,3 @@ async def change_status(call: types.CallbackQuery) -> None:
     role = data[0]
     id_tg = int(data[1])
     await call.message.edit_text(await dev_change_role(id_tg=id_tg, role=role), reply_markup=back_to_menu_kb())
-
-
-

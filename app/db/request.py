@@ -127,7 +127,12 @@ async def get_accept_accounts():
 
 
 async def get_user(surn: str,
-                   action: Literal["delete", "undelete", "admin", "ta_admin", None] = "delete") -> Accounts or None:
+                   action: Literal[
+                       "delete",
+                       "undelete",
+                       "admin",
+                       "ta_admin",
+                       "developer"] = "delete") -> Accounts or None:
     async with async_session() as session:
         try:
             if action == "delete" or "admin":
@@ -158,11 +163,14 @@ async def get_user(surn: str,
                     .where(Accounts.status == Status.ADMIN.value,
                            Users.surname == surn)
                 )
-            else:
+            elif action == "developer":
                 user = await session.execute(
                     select(Users)
+                    .join(Accounts)
                     .where(Users.surname == surn)
                 )
+            else:
+                raise TypeError(f"Invalid action: {action}")
             return user.scalars().first()
         except Exception as e:
             print(e)

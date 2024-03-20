@@ -74,7 +74,7 @@ def dev_change(builder: InlineKeyboardBuilder, id_tg: int) -> InlineKeyboardMark
 
 @kb_wrap(keyboard_type="inline", adjust_keyboard=1)
 def back_to_menu_kb(builder: InlineKeyboardBuilder) -> InlineKeyboardMarkup:
-    builder.button(text="← Вернутся в главное меню", callback_data="menu")
+    builder.button(text="← Вернуться в главное меню", callback_data="menu")
 
 
 @kb_wrap(keyboard_type="inline", adjust_keyboard=2)
