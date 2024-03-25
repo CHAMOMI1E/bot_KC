@@ -5,8 +5,9 @@ from app.core.filter.is_admin import IsSuperAdmin
 from app.core.sender import send_message
 from app.db.models import Status
 
-from app.db.request import get_user, edit_user_id_db, \
-    get_active_users, get_decline_users, get_account, dev_update_status
+from app.db.request import edit_user_id_db, \
+    get_active_users, get_decline_users, get_account, dev_update_status, get_user_for_ta_admin, get_user_for_undelete, \
+    get_user_for_delete
 from app.core.keyboard import super_admin_keyboard, delete_accept, accept_unblock, back_to_menu_kb, accept_admin_kb, \
     admin_keyboard, take_away_admin_kb
 from app.utils.states import Post, Delete, Unblock, NewAdmin, TakeAwayAdmin
@@ -81,16 +82,16 @@ async def remove_admin(call: types.CallbackQuery, state: FSMContext) -> None:
     data = await state.get_data()
     await state.set_state(None)
     await call.message.delete()
-    user = await get_user(data["surname"], 'ta_admin')
+    user = await get_user_for_ta_admin(data["surname"])
     if user:
-        account = await get_user(data["surname"])
+        account = await get_account(user.id)
         await call.message.answer("Вы уверены что хотите отобрать права администратора у этого чловека?\n"
                                   f"Фамилия: {user.surname}\n"
                                   f"Имя: {user.name}\n"
                                   f"Отчество: {user.patronymic}\n",
                                   reply_markup=take_away_admin_kb(id_tg=account.id_tg))
     else:
-        await call.message.answer("Что-то пошло не так... Вернитесь в главное меню", reply_markup=back_to_menu_kb())
+        await call.message.answer("Администратор с такой фамилией не найден!", reply_markup=back_to_menu_kb())
 
 
 @sup_admin_router.message(Unblock.surname)
@@ -98,16 +99,17 @@ async def unblock_user(message: types.Message, state: FSMContext) -> None:
     await state.update_data(surname=message.text.title())
     data = await state.get_data()
     await state.clear()
-    user = await get_user(data["surname"], "undelete")
+    user = await get_user_for_undelete(data["surname"])
     if user:
         account = await get_account(user.id)
-        await message.answer("Уверены что хотите вернуть права доступа у этого человека?\n \n"
+        await message.answer("Уверены что хотите вернуть права доступа этому человеку?\n \n"
                              f"Фамилия: {user.surname} \n"
                              f"Имя: {user.name} \n"
                              f"Отчество: {user.patronymic}",
                              reply_markup=accept_unblock(id_tg=account.id_tg))
+
     else:
-        await message.answer(f"Сотрудник по фамилии {data['surname']} не найден!")
+        await message.answer(f"Сотрудник по фамилии {data['surname']} не найден!", reply_markup=back_to_menu_kb())
 
 
 @sup_admin_router.callback_query(F.data == "text_decline")
@@ -120,7 +122,7 @@ async def decline_text_def(call: types.CallbackQuery, state: FSMContext):
 async def confirm_user_by_surname(message: types.Message, state: FSMContext) -> None:
     await state.update_data(surname=message.text)
     data = await state.get_data()
-    user = await get_user(data["surname"])
+    user = await get_user_for_delete(data["surname"])
     if user:
         account = await get_account(user.id)
         await message.answer(f"Вы уверены что хотите отозвать права доступа у этого сотрудника? \n"
@@ -146,7 +148,7 @@ async def delete_callback_query(call: types.CallbackQuery) -> None:
 @sup_admin_router.callback_query(F.data.startswith("unblock_"))
 async def unblock_user(call: types.CallbackQuery) -> None:
     data = call.data.split("_")[1]
-    await call.message.edit_text("Пользователю были выданы права доступа")
+    await call.message.edit_text("Пользователю были выданы права доступа", reply_markup=back_to_menu_kb())
     await edit_user_id_db(int(data), True)
     await send_message("Вам выдали права доступа как сотрудника!", int(data))
 
@@ -156,7 +158,7 @@ async def add_admin_complite(message: types.Message, state: FSMContext) -> None:
     await state.update_data(surname=message.text)
     data = await state.get_data()
     await state.clear()
-    user = await get_user(surn=data["surname"], action='admin')
+    user = await get_user_for_delete(data["surname"])
     if user:
         account = await get_account(user.id)
         if account.status not in [Status.ADMIN.value, Status.SUPER_ADMIN.value, Status.DEVELOPER.value,
@@ -182,4 +184,4 @@ async def take_admin(call: types.CallbackQuery) -> None:
     data = call.data.split("_")[1]
     await call.message.edit_text(await dev_update_status(int(data), Status.ACTIVE.value),
                                  reply_markup=back_to_menu_kb())
-    await send_message("У вам были отозваны права администратора", int(data), None)
+    await send_message("У вас были отозваны права администратора", int(data), None)

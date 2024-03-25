@@ -3,7 +3,7 @@ from aiogram.fsm.context import FSMContext
 from app.core.filter.is_admin import IsDeveloper
 
 from app.core.keyboard import dev_keyboard, dev_change, back_to_menu_kb
-from app.db.request import get_user, get_account
+from app.db.request import get_account, get_user_as_developer
 from app.utils.states import Change
 from app.views.dev_views import dev_change_role
 
@@ -28,10 +28,10 @@ async def start_change_status(call: types.CallbackQuery, state: FSMContext):
 
 @dev_router.message(Change.surname)
 async def confirm_change_status(message: types.Message, state: FSMContext):
-    await state.update_data(surname=message.text)
+    await state.update_data(surname=message.text.title())
     data = await state.get_data()
     await state.clear()
-    user = await get_user(surn=data["surname"], action="developer")
+    user = await get_user_as_developer(data["surname"])
     if user:
         account = await get_account(user.id)
         await message.answer(f"Фамилия: {user.surname}\n"

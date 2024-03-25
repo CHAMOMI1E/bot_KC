@@ -45,7 +45,7 @@ class Accounts(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     id_tg: Mapped[bigint] = mapped_column(BigInteger)
     status: Mapped[str] = mapped_column()
-    id_user: Mapped[bigint] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
+    id_user: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
 
     user: Mapped[List["Users"]] = relationship("Users", back_populates="accounts")
 

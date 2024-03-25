@@ -126,55 +126,62 @@ async def get_accept_accounts():
     return accounts_with_desired_status
 
 
-async def get_user(surn: str,
-                   action: Literal[
-                       "delete",
-                       "undelete",
-                       "admin",
-                       "ta_admin",
-                       "developer"] = "delete") -> Accounts or None:
-    async with async_session() as session:
-        try:
-            if action == "delete" or "admin":
-                user = await session.execute(
-                    select(Users)
-                    .join(Accounts)
-                    .where(Accounts.status == Status.ACTIVE.value,
-                           Users.surname == surn)
-                )
-            elif action == "undelete":
-                user = await session.execute(
-                    select(Users)
-                    .join(Accounts)
-                    .where(Accounts.status == Status.DISABLE.value,
-                           Users.surname == surn)
-                )
-            elif action == "admin":
-                user = await session.execute(
-                    select(Users)
-                    .join(Accounts)
-                    .where(Accounts.status == Status.ADMIN.value,
-                           Users.surname == surn)
-                )
-            elif action == "ta_admin":
-                user = await session.execute(
-                    select(Users)
-                    .join(Accounts)
-                    .where(Accounts.status == Status.ADMIN.value,
-                           Users.surname == surn)
-                )
-            elif action == "developer":
-                user = await session.execute(
-                    select(Users)
-                    .join(Accounts)
-                    .where(Users.surname == surn)
-                )
-            else:
-                raise TypeError(f"Invalid action: {action}")
+async def get_user_as_developer(surn: str) -> Users or None:
+    try:
+        async with async_session() as session:
+            user = await session.execute(
+                select(Users)
+                .where(Users.surname == surn)
+            )
             return user.scalars().first()
-        except Exception as e:
-            print(e)
-            return None
+    except Exception as e:
+        print(e)
+        return None
+
+
+async def get_user_for_delete(surn: str) -> Users or None:
+    try:
+        async with async_session() as session:
+            user = await session.execute(
+                select(Users)
+                .join(Accounts)
+                .where(Accounts.status == Status.ACTIVE.value,
+                       Users.surname == surn)
+            )
+            return user.scalars().first()
+    except Exception as e:
+        print(e)
+        return None
+
+
+async def get_user_for_undelete(surn: str) -> Users or None:
+    try:
+        async with async_session() as session:
+            user = await session.execute(
+                select(Users)
+                .join(Accounts)
+                .where(Accounts.status == Status.DISABLE.value,
+                       Users.surname == surn)
+            )
+        return user.scalars().first()
+    except Exception as e:
+        print(e)
+        return None
+
+
+async def get_user_for_ta_admin(surn: str) -> Users or None:
+    try:
+        async with async_session() as session:
+            user = await session.execute(
+                select(Users)
+                .join(Accounts)
+                .where(Accounts.status == Status.ADMIN.value,
+                       Users.surname == surn)
+            )
+            return user.scalars().first()
+    except Exception as e:
+        print(e)
+        return None
 
 
 async def get_account(id_tg: int, action: Literal[None, "dev"] = None) -> Accounts or None:
