@@ -49,9 +49,3 @@ async def accept_text_def(call: types.CallbackQuery, state: FSMContext):
             await send_message(data1["text"], account.id_tg)
     await call.message.edit_text("Сообщение отправлено!")
     await call.message.answer("Хотите вернутся в главное меню?", reply_markup=back_to_menu_kb())
-
-
-
-
-
-
