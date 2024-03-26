@@ -100,14 +100,14 @@ async def unblock_user(call: types.CallbackQuery) -> None:
     await send_message("Вам выдали права доступа как сотрудника!", int(data))
 
 
-@sup_admin_router.callback_query(F.data.stratswith("admin-accept"))
+@sup_admin_router.callback_query(F.data.startswith("admin-accept"))
 async def finish_add_admin_message(call: types.CallbackQuery) -> None:
     data = call.data.split("_")[1]
     await call.message.edit_text(await dev_update_status(int(data), Status.ADMIN.value), reply_markup=back_to_menu_kb())
     await send_message("Вам выдали права администратора", int(data), admin_keyboard())
 
 
-@sup_admin_router.callback_query(F.data.stratswith("take-away-admin_"))
+@sup_admin_router.callback_query(F.data.startswith("take-away-admin_"))
 async def take_admin(call: types.CallbackQuery) -> None:
     data = call.data.split("_")[1]
     await call.message.edit_text(await dev_update_status(int(data), Status.ACTIVE.value),
@@ -128,7 +128,7 @@ async def remove_admin(message: types.Message, state: FSMContext) -> None:
                              f"Фамилия: {user.surname}\n"
                              f"Имя: {user.name}\n"
                              f"Отчество: {user.patronymic}\n",
-                             reply_markup=await take_away_admin_kb(id_tg=account.id_tg))
+                             reply_markup=take_away_admin_kb(id_tg=account.id_tg))
     else:
         await message.answer("Администратор с такой фамилией не найден!", reply_markup=back_to_menu_kb())
 
